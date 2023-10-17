@@ -15,6 +15,4 @@ class Controller(ABC):
 
     # @abstractmethod
     def draw(self):
-        self.client.image.clip_draw(self.client.frame * 100, self.client.action * 100,
-                                    100, 100,
-                                    self.client.x, self.client.y)
+        pass

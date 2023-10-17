@@ -55,15 +55,13 @@ def reset_world():
     world += team1
     world += team2
 
-    # num = random.randrange(11)
-    # team = random.randrange(2)
-    # if team == 0:
-    #     player = team1[num]
-    # else:
-    #     player = team2[num]
-    # player.controller = Controllable(player)
-    
-    player = team1[0]
+    num = random.randrange(11)
+    team = random.randrange(2)
+    if team == 0:
+        player = team1[num]
+    else:
+        player = team2[num]
+    player.controller = Controllable(player)
 
 
 def update_world():
