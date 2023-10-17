@@ -21,7 +21,7 @@ class Player:
         self.controller.update()
 
     def handle_event(self, event):
-        self.controller.handle_event(('INPUT', event))
+        self.controller.handle_event(event)
 
     def draw(self):
         self.controller.draw()
