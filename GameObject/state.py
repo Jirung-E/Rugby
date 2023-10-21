@@ -66,6 +66,7 @@ class State(ABC):
 class IdleState(State):
     def __init__(self, controller):
         super().__init__(controller)
+        self.fps = 10
         y = 582-120
         self._clip_points: List[Point] = [Point(x, y) for x in range(0, 400, 81)]
         self._clip_width = [72, 72, 72, 72, 72]
@@ -82,7 +83,7 @@ class IdleState(State):
 class RunState(State):
     def __init__(self, controller):
         super().__init__(controller)
-        self.fps = 10
+        self.fps = 15
         y = 318
         self._clip_points: List[Point] = [Point(481, y), Point(550, y), Point(625, y), 
                                           Point(713, y), Point(794, y), Point(794+72+1, y)]
