@@ -9,7 +9,7 @@ class Player:
     def __init__(self):
         self.position = Point(0, 0)
         self.direction = Vector(0, 0)
-        self.run_speed = Vector(5, 2)
+        self.run_speed = Vector(5, 3)
 
         self.controller: Controller = None
 
