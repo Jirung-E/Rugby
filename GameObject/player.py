@@ -1,21 +1,19 @@
 from GameObject.controller import Controller
 
+from Math import *
+
+from pico2d import Image
+
 
 class Player:
     def __init__(self):
-        self.x = 0
-        self.y = 0
-        self.dir_x = 0
-        self.dir_y = 0
-        self.run_speed_x = 5
-        self.run_speed_y = 2
+        self.position = Point(0, 0)
+        self.direction = Vector(0, 0)
+        self.run_speed = Vector(5, 2)
 
         self.controller: Controller = None
 
-        self.frame = 0
-        self.action = 3
-
-        self.image = None
+        self.image: Image = None
 
     def update(self):
         self.controller.update()
