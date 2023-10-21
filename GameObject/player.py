@@ -16,6 +16,8 @@ class Player:
         self.image: Image = None
 
     def update(self):
+        self.position.x += self.direction.x * self.run_speed.x
+        self.position.y += self.direction.y * self.run_speed.y
         self.controller.update()
 
     def handle_event(self, event):
