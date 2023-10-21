@@ -1,6 +1,8 @@
 from GameObject.controller import Controller
 from GameObject.state import *
 
+import random
+
 
 class AIControl(Controller):
     def __init__(self, client):
@@ -19,6 +21,7 @@ class AIControl(Controller):
 
     def start(self):
         self.current_state.enter()
+        self.current_state.frame = random.randrange(0, len(self.current_state._clip_points))
 
     def update(self):
         pass
