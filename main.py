@@ -34,7 +34,7 @@ def reset_world():
     world = []
 
     field = Field()
-    world.append(field)
+    # world.append(field)
 
     team1_image = load_image('res/player1.png')
     team2_image = load_image('res/player2.png')
@@ -72,11 +72,12 @@ def reset_world():
 def update_world():
     for o in world:
         o.update()
-    pass
 
 
 def render_world():
     clear_canvas()
+    field.draw()
+    world.sort(key=lambda o: o.position.y, reverse=True)
     for o in world:
         o.draw()
     update_canvas()
