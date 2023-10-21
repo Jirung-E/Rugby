@@ -36,21 +36,22 @@ def reset_world():
     field = Field()
     world.append(field)
 
-    player_image = load_image('res/player.png')
+    team1_image = load_image('res/player1.png')
+    team2_image = load_image('res/player2.png')
 
     team1 = [Player() for _ in range(0, 11)]
     for i in range(11):
         team1[i].position.x = random.randint(100-20, 100+20)
         team1[i].position.y = 50 + i * 60
         team1[i].controller = AIControl(team1[i])
-        team1[i].image = player_image
+        team1[i].image = team1_image
     team2 = [Player() for _ in range(0, 11)]
     for i in range(11):
         team2[i].position.x = random.randint(700-20, 700+20)
         team2[i].position.y = 50 + i * 60
         team2[i].controller = AIControl(team2[i])
         team2[i].controller.flip = True
-        team2[i].image = player_image
+        team2[i].image = team2_image
     world += team1
     world += team2
 
