@@ -28,6 +28,7 @@ def reset_world():
     global team1
     global team2
     global player
+    global ball
 
     running = True
     world = []
@@ -62,6 +63,10 @@ def reset_world():
         player = team2[num]
     player.position = Point(400, 300)
     player.controller = Controllable(player)
+
+    ball = Ball()
+    ball.position = Point(400, 300)
+    world.append(ball)
 
 
 def update_world():
