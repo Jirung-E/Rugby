@@ -5,14 +5,14 @@ class Controller(ABC):
     def __init__(self, client):
         self.client = client
 
-    # @abstractmethod
+    @abstractmethod
     def update(self):
         pass
 
-    # @abstractmethod
+    @abstractmethod
     def handle_event(self, event):
         pass
 
-    # @abstractmethod
+    @abstractmethod
     def draw(self):
         pass
