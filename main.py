@@ -49,6 +49,7 @@ def reset_world():
         team2[i].position.x = random.randint(700-20, 700+20)
         team2[i].position.y = 50 + i * 60
         team2[i].controller = AIControl(team2[i])
+        team2[i].controller.flip = True
         team2[i].image = team2_image
     world += team1
     world += team2
