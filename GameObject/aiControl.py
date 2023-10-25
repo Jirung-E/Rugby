@@ -24,7 +24,12 @@ class AIControl(Controller):
         self.current_state.frame = random.randrange(0, len(self.current_state._clip_points))
 
     def update(self):
-        pass
+        if self.client.ball is not None:
+            self.current_state.run()
+            if self.flip:
+                self.client.direction.x = -1
+            else:
+                self.client.direction.x = 1
 
     def handle_event(self, event):
         if self.client.direction.x == 0 and self.client.direction.y == 0:

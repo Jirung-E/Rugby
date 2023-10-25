@@ -66,7 +66,7 @@ class Ball:
         elif self.position.y > 600:
             self.velocity.y = -abs(self.velocity.y)
 
-        # self.rotate += self.rotate_power * self.rotate_dir
+        self.rotate += self.rotate_power * self.rotate_dir
 
 
     def draw(self):
