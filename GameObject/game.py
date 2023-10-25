@@ -27,7 +27,7 @@ class Game:
         team1 = [Player() for _ in range(0, 11)]
         for i in range(11):
             team1[i].position.x = random.randint(100-20, 100+20)
-            team1[i].position.y = 50 + i * 60
+            team1[i].position.y = 50 + i * 30
             team1[i].controller = AIControl(team1[i])
             team1[i].image = team1_image
             team1[i].team = 1
@@ -93,6 +93,7 @@ class Game:
         clear_canvas()
         self.background.draw()
         self.world.sort(key=lambda o: o.position.y, reverse=True)
+        self.ball.drawShadow()
         for o in self.world:
             o.draw()
         update_canvas()

@@ -17,6 +17,7 @@ class Ball:
         self.rotate_dir = random.choice([-1, 1])
 
         self.image: Image = load_image('res/ball_small.png')
+        self.shadow: Image = load_image('res/shadow_small.png')
 
         self.owner = None
 
@@ -56,8 +57,20 @@ class Ball:
             if self.rotate_power < 0:
                 self.rotate_power = 0
 
-        self.rotate += self.rotate_power * self.rotate_dir
+        if self.position.x < 0:
+            self.velocity.x = abs(self.velocity.x)
+        elif self.position.x > 800:
+            self.velocity.x = -abs(self.velocity.x)
+        if self.position.y < 0:
+            self.velocity.y = abs(self.velocity.y)
+        elif self.position.y > 600:
+            self.velocity.y = -abs(self.velocity.y)
+
+        # self.rotate += self.rotate_power * self.rotate_dir
 
 
     def draw(self):
-        self.image.composite_draw(self.rotate, '', self.position.x, self.position.y + self.height)
+        self.image.composite_draw(self.rotate, '', self.position.x, self.position.y-20 + self.height)
+
+    def drawShadow(self):
+        self.shadow.draw(self.position.x, self.position.y-50)
