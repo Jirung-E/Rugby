@@ -28,6 +28,7 @@ class Game:
             team1[i].position.y = 50 + i * 60
             team1[i].controller = AIControl(team1[i])
             team1[i].image = team1_image
+            team1[i].team = 1
         team2 = [Player() for _ in range(0, 11)]
         for i in range(11):
             team2[i].position.x = random.randint(700-20, 700+20)
@@ -35,6 +36,7 @@ class Game:
             team2[i].controller = AIControl(team2[i])
             team2[i].controller.flip = True
             team2[i].image = team2_image
+            team2[i].team = 2
         self.world += team1
         self.world += team2
 
@@ -55,7 +57,7 @@ class Game:
         self.world.append(obj)
 
     def __catchBall(self, player: Player):
-        if self.ball.height > 30:
+        if self.ball.height > 70:
             return
         if Point.distance2(player.position, self.ball.position) < 30**2:
             print(Point.distance(player.position, self.ball.position))
@@ -63,6 +65,19 @@ class Game:
             self.ball.owner = player
             player.caught = True
             self.ball.rotate = 0
+
+    def __throwBall(self):
+        if self.ball.owner.team == 1 and self.ball.owner.direction.x > 0:
+            return
+        if self.ball.owner.team == 2 and self.ball.owner.direction.x < 0:
+            return
+        
+        self.ball.owner.caught = False
+        self.ball.velocity.x = self.ball.owner.direction.x * self.ball.owner.run_speed.x
+        self.ball.velocity.y = self.ball.owner.direction.y * self.ball.owner.run_speed.y
+        self.ball.owner = None
+        self.ball.velocity_z = 3
+        self.ball.rotate_power = random.uniform(0.1, 0.15)
 
     def handleEvents(self):
         events = get_events()
@@ -72,7 +87,10 @@ class Game:
             elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
                 self.playing = False
             elif event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
-                self.__catchBall(self.player)
+                if self.ball.owner is not None:
+                    self.__throwBall()
+                else:
+                    self.__catchBall(self.player)
             else:
                 self.player.handle_event(event)
 

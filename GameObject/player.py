@@ -16,6 +16,7 @@ class Player:
         self.image: Image = None
 
         self.caught = False
+        self.team = 0
 
     def update(self):
         self.position.x += self.direction.x * self.run_speed.x

@@ -22,7 +22,8 @@ class Ball:
 
     def update(self):
         if self.owner is not None:
-            self.position = self.owner.position
+            self.position.x = self.owner.position.x
+            self.position.y = self.owner.position.y
             self.height = 80
             return
 
@@ -33,6 +34,16 @@ class Ball:
         self.velocity_z -= self.gravity
         if self.height <= 0:
             self.height = 0
+
+            if abs(self.velocity.x) < 0.1:
+                self.velocity.x = 0
+            else:
+                self.velocity.x *= 0.9
+
+            if abs(self.velocity.y) < 0.1:
+                self.velocity.y = 0
+            else:
+                self.velocity.y *= 0.9
 
             if abs(self.velocity_z) < 1:
                 self.velocity_z = 0
