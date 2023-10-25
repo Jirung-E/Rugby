@@ -18,7 +18,14 @@ class Ball:
 
         self.image: Image = load_image('res/ball_small.png')
 
+        self.owner = None
+
     def update(self):
+        if self.owner is not None:
+            self.position = self.owner.position
+            self.height = 80
+            return
+
         self.position.x += self.velocity.x
         self.position.y += self.velocity.y
         

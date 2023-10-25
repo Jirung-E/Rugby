@@ -47,12 +47,22 @@ class Game:
         self.player.position = Point(400, 300)
         self.player.controller = Controllable(self.player)
 
-        ball = Ball()
-        ball.position = Point(400, 300)
-        self.world.append(ball)
+        self.ball = Ball()
+        self.ball.position = Point(400, 300)
+        self.world.append(self.ball)
 
     def addObject(self, obj):
         self.world.append(obj)
+
+    def __catchBall(self, player: Player):
+        if self.ball.height > 30:
+            return
+        if Point.distance2(player.position, self.ball.position) < 30**2:
+            print(Point.distance(player.position, self.ball.position))
+            print('catch')
+            self.ball.owner = player
+            player.caught = True
+            self.ball.rotate = 0
 
     def handleEvents(self):
         events = get_events()
@@ -61,6 +71,8 @@ class Game:
                 self.playing = False
             elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
                 self.playing = False
+            elif event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
+                self.__catchBall(self.player)
             else:
                 self.player.handle_event(event)
 
