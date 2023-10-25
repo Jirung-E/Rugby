@@ -8,7 +8,9 @@ from pico2d import *
 
 class Game:
     def __init__(self):
-        open_canvas(800, 600)
+        self.WIDTH = 800
+        self.HEIGHT = 600
+        open_canvas(self.WIDTH, self.HEIGHT)
         self.background = Field()
         self.resetWorld()
 
@@ -56,16 +58,6 @@ class Game:
     def addObject(self, obj):
         self.world.append(obj)
 
-    def __catchBall(self, player: Player):
-        if self.ball.height > 70:
-            return
-        if Point.distance2(player.position, self.ball.position) < 30**2:
-            print(Point.distance(player.position, self.ball.position))
-            print('catch')
-            self.ball.owner = player
-            player.caught = True
-            self.ball.rotate = 0
-
     def __throwBall(self):
         if self.ball.owner.team == 1 and self.ball.owner.direction.x > 0:
             return
@@ -87,10 +79,9 @@ class Game:
             elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
                 self.playing = False
             elif event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
-                if self.ball.owner is not None:
-                    self.__throwBall()
-                else:
-                    self.__catchBall(self.player)
+                self.player.catch(self.ball)
+            elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
+                self.player.throw(event.x, self.HEIGHT - event.y)
             else:
                 self.player.handle_event(event)
 
