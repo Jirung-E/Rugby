@@ -34,7 +34,7 @@ class Game:
         self.team2 = [Player() for _ in range(0, 11)]
         for i in range(11):
             self.team2[i].position.x = random.randint(700-20, 700+20)
-            self.team2[i].position.y = 50 + i * 60
+            self.team2[i].position.y = 50 + i * 50
             self.team2[i].controller = AIControl(self.team2[i])
             self.team2[i].controller.flip = True
             self.team2[i].image = team2_image

@@ -70,7 +70,7 @@ class Ball:
 
 
     def draw(self):
-        self.image.composite_draw(self.rotate, '', self.position.x, self.position.y-20 + self.height)
+        self.image.composite_draw(self.rotate, '', self.position.x, self.position.y+30 + self.height)
 
     def drawShadow(self):
-        self.shadow.draw(self.position.x, self.position.y-50)
+        self.shadow.draw(self.position.x, self.position.y)

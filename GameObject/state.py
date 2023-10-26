@@ -33,8 +33,8 @@ class State(ABC):
                 self._clip_height, 
                 0,
                 'h',
-                client.position.x, 
-                client.position.y, 
+                client.position.x - client.pivot.x, 
+                client.position.y - client.pivot.y, 
                 self._clip_width[self.frame] * size, 
                 self._clip_height * size
             )
@@ -44,8 +44,8 @@ class State(ABC):
                 self._clip_points[self.frame].y, 
                 self._clip_width[self.frame], 
                 self._clip_height, 
-                client.position.x, 
-                client.position.y, 
+                client.position.x - client.pivot.x, 
+                client.position.y - client.pivot.y, 
                 self._clip_width[self.frame] * size, 
                 self._clip_height * size
             )

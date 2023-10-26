@@ -16,6 +16,7 @@ class Player:
         self.controller: Controller = None
 
         self.image: Image = None
+        self.pivot = Point(0, -50)
 
         self.ball = None
         self.team = 0
