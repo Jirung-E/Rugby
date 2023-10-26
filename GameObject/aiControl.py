@@ -25,11 +25,19 @@ class AIControl(Controller):
 
     def update(self):
         if self.client.ball is not None:
+            if self.client.position.x > 700:
+                self.client.throw(500, 300)
+            elif self.client.position.x < 100:
+                self.client.throw(300, 300)
             self.current_state.run()
             if self.flip:
                 self.client.direction.x = -1
             else:
                 self.client.direction.x = 1
+        else:
+            self.current_state.idle()
+            self.client.direction.x = 0
+            self.client.direction.y = 0
 
     def handle_event(self, event):
         if self.client.direction.x == 0 and self.client.direction.y == 0:
