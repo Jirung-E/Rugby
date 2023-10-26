@@ -27,16 +27,16 @@ class Game:
         self.team1 = [Player() for _ in range(0, 11)]
         for i in range(11):
             self.team1[i].position.x = random.randint(100-20, 100+20)
-            self.team1[i].position.y = 50 + i * 50
+            self.team1[i].position.y = 20 + i * 50
             self.team1[i].controller = AIControl(self.team1[i])
             self.team1[i].image = team1_image
             self.team1[i].team = 1
         self.team2 = [Player() for _ in range(0, 11)]
         for i in range(11):
             self.team2[i].position.x = random.randint(700-20, 700+20)
-            self.team2[i].position.y = 50 + i * 50
+            self.team2[i].position.y = 20 + i * 50
             self.team2[i].controller = AIControl(self.team2[i])
-            self.team2[i].controller.flip = True
+            self.team2[i].flip = True
             self.team2[i].image = team2_image
             self.team2[i].team = 2
         self.world += self.team1

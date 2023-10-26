@@ -1,10 +1,12 @@
 from GameObject.controller import Controller
+from GameObject.state import *
 
 from Math import *
 
 from pico2d import Image
 import math
 import random
+import time
 
 
 class Player:
@@ -13,13 +15,22 @@ class Player:
         self.direction = Vector(0, 0)
         self.run_speed = Vector(5, 3)
 
+        self.state = None
         self.controller: Controller = None
 
         self.image: Image = None
         self.pivot = Point(0, -50)
+        self.flip = False
 
         self.ball = None
         self.team = 0
+
+        self.idle_state = IdleState(self)
+        self.run_state = RunState(self)
+        self.current_state: State = self.idle_state
+        self.startAnimation()
+
+        self.__prev_draw_time = time.time()
 
     def update(self):
         self.position.x += self.direction.x * self.run_speed.x
@@ -29,8 +40,40 @@ class Player:
     def handle_event(self, event):
         self.controller.handle_event(event)
 
+    def startAnimation(self):
+        self.current_state.enter()
+        self.current_state.frame = random.randrange(0, len(self.current_state._clip_points))
+
     def draw(self):
-        self.controller.draw()
+        size = 1
+        if self.flip:
+            self.image.clip_composite_draw(
+                self.current_state._clip_points[self.current_state.frame].x, 
+                self.current_state._clip_points[self.current_state.frame].y, 
+                self.current_state._clip_width[self.current_state.frame], 
+                self.current_state._clip_height, 
+                0,
+                'h',
+                self.position.x - self.pivot.x, 
+                self.position.y - self.pivot.y, 
+                self.current_state._clip_width[self.current_state.frame] * size, 
+                self.current_state._clip_height * size
+            )
+        else:
+            self.image.clip_draw(
+                self.current_state._clip_points[self.current_state.frame].x, 
+                self.current_state._clip_points[self.current_state.frame].y, 
+                self.current_state._clip_width[self.current_state.frame], 
+                self.current_state._clip_height, 
+                self.position.x - self.pivot.x, 
+                self.position.y - self.pivot.y, 
+                self.current_state._clip_width[self.current_state.frame] * size, 
+                self.current_state._clip_height * size
+            )
+            
+        if time.time() - self.__prev_draw_time > 1 / self.current_state.fps:
+            self.current_state.frame = (self.current_state.frame + 1) % len(self.current_state._clip_points)
+            self.__prev_draw_time = time.time()
 
     def catch(self, ball):
         if self.ball is not None:
