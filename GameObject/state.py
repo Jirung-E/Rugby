@@ -45,6 +45,7 @@ class IdleState(State):
     def idle(self):
         pass
 
+
 class RunState(State):
     def __init__(self, client):
         super().__init__(client)
@@ -62,4 +63,27 @@ class RunState(State):
         self.exit()
         self.client.current_state = self.client.idle_state
         self.client.startAnimation()
-        
+
+
+class GrabState(State):
+    def __init__(self, client):
+        super().__init__(client)
+        pass
+
+    def run(self):
+        pass
+
+    def idle(self):
+        pass
+
+
+class TackleState(State):
+    def __init__(self, client):
+        super().__init__(client)
+        pass
+
+    def run(self):
+        pass
+
+    def idle(self):
+        pass
