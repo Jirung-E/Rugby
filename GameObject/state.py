@@ -68,7 +68,17 @@ class RunState(State):
 class GrabState(State):
     def __init__(self, client):
         super().__init__(client)
+
+    def run(self):
         pass
+
+    def idle(self):
+        pass
+
+
+class GrabbedState(State):
+    def __init__(self, client):
+        super().__init__(client)
 
     def run(self):
         pass
@@ -80,7 +90,6 @@ class GrabState(State):
 class TackleState(State):
     def __init__(self, client):
         super().__init__(client)
-        pass
 
     def run(self):
         pass

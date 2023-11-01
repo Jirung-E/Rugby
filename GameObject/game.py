@@ -67,7 +67,8 @@ class Game:
                 self.playing = False
                 
             elif event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
-                self.player.catch(self.ball)
+                # self.player.catch(self.ball)
+                self.player.grab(self.world)
             elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
                 self.player.throw(event.x, self.HEIGHT - event.y)
             else:

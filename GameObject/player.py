@@ -2,11 +2,13 @@ from GameObject.controller import Controller
 from GameObject.state import *
 
 from Math import *
+from GameObject.ball import Ball
 
 from pico2d import Image
 import math
 import random
 import time
+from typing import List
 
 
 class Player:
@@ -27,8 +29,15 @@ class Player:
         self.ball = None
         self.team = 0
 
+        self.grabbed_opponent = None            # 지금 잡고있는 상대방
+        self.grabbed_offset = Point(0, 0)       # 잡고있는 상대방의 상대좌표
+        self.attackers: List[Player] = []       # 공격하는 상대방들
+
         self.idle_state = IdleState(self)
         self.run_state = RunState(self)
+        self.grab_state = GrabState(self)
+        self.grabbed_state = GrabbedState(self)
+        self.tackle_state = TackleState(self)
         self.current_state: State = self.idle_state
         self.startAnimation()
 
@@ -36,19 +45,32 @@ class Player:
 
     def update(self):
         speed = self.run_speed
-        if self.dash:
-            if self.direction.x != 0 or self.direction.y != 0:
-                self.stemina -= 1
-                print(self.stemina)
-                if self.stemina <= 0:
-                    self.stemina = 0
-                    self.dash = False
-                speed = self.run_speed * 1.5
+        for a in self.attackers:
+            speed = speed - a.run_speed * random.uniform(0.8, 1.2)
+            self.stemina -= 1
+            if self.stemina <= 0:
+                self.stemina = 0
+        if self.grabbed_opponent is not None:
+            self.position.x = self.grabbed_opponent.position.x - self.grabbed_offset.x
+            self.position.y = self.grabbed_opponent.position.y - self.grabbed_offset.y
+            self.stemina -= 1
+            if self.stemina <= 0:
+                self.stemina = 0
+                self.release()
         else:
-            if self.stemina < 100:
-                self.stemina += 1
-        self.position.x += self.direction.x * speed.x
-        self.position.y += self.direction.y * speed.y
+            if self.dash:
+                if self.direction.x != 0 or self.direction.y != 0:
+                    self.stemina -= 1
+                    print(self.stemina)
+                    if self.stemina <= 0:
+                        self.stemina = 0
+                        self.dash = False
+                    speed = speed * 1.5
+            self.position.x += self.direction.x * speed.x
+            self.position.y += self.direction.y * speed.y
+            self.stemina += 1
+            if self.stemina >= 100:
+                self.stemina = 100
         self.controller.update()
 
     def handle_event(self, event):
@@ -128,6 +150,39 @@ class Player:
         self.ball.rotate_power = random.uniform(0.1, 0.15)
         self.ball.owner = None
         self.ball = None
+
+    def grab(self, objects):
+        if self.ball is not None:
+            return
+        if self.grabbed_opponent is not None:
+            return
+        
+        for o in objects:
+            if isinstance(o, Ball):
+                self.catch(o)
+                if self.ball is not None:
+                    return
+        
+        for o in objects:
+            if o is self:
+                continue
+            if isinstance(o, Player):
+                if o.team == self.team:
+                    continue
+                if Point.distance2(self.position, o.position) < 30**2:
+                    self.grabbed_opponent = o
+                    o.attackers.append(self)
+                    self.grabbed_offset = Point(o.position.x - self.position.x, o.position.y - self.position.y)
+                    return
+                
+    def release(self):
+        if self.grabbed_opponent is None:
+            return
+        
+        self.grabbed_opponent.attackers.remove(self)
+        self.grabbed_opponent = None
+        self.grabbed_offset = Point(0, 0)
+
 
 '''
 ## AI & 플레이어

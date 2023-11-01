@@ -1,10 +1,12 @@
 from GameObject.controller import Controller
 
-from sdl2 import SDL_KEYDOWN, SDL_KEYUP, SDLK_w, SDLK_a, SDLK_s, SDLK_d, SDLK_LSHIFT
+from sdl2 import SDL_KEYDOWN, SDL_KEYUP, SDLK_w, SDLK_a, SDLK_s, SDLK_d, SDLK_LSHIFT, SDLK_SPACE
+
+from GameObject.player import Player
 
 
 class Controllable(Controller):
-    def __init__(self, client):
+    def __init__(self, client: Player):
         super().__init__(client)
 
     def update(self):
@@ -34,6 +36,8 @@ class Controllable(Controller):
                 self.client.direction.y += 1
             elif event.key == SDLK_LSHIFT:
                 self.client.dash = False
+            elif event.key == SDLK_SPACE:
+                self.client.release()
 
         if self.client.direction.x == 0 and self.client.direction.y == 0:
             self.client.current_state.idle()
