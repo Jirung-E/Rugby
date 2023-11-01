@@ -14,6 +14,7 @@ class AIControl(Controller):
             elif self.client.position.x < 100:
                 self.client.throw(300, 300)
             self.client.current_state.run()
+            self.client.dash = True
             if self.client.team == 1:
                 self.client.direction.x = 1
                 self.client.flip = False

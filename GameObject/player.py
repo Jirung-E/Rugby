@@ -43,7 +43,7 @@ class Player:
                 if self.stemina <= 0:
                     self.stemina = 0
                     self.dash = False
-                speed = self.run_speed * 1.8
+                speed = self.run_speed * 1.5
         else:
             if self.stemina < 100:
                 self.stemina += 1
