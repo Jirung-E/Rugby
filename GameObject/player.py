@@ -33,6 +33,8 @@ class Player:
         self.grabbed_offset = Point(0, 0)       # 잡고있는 상대방의 상대좌표
         self.attackers: List[Player] = []       # 공격하는 상대방들
 
+        self.tackle_to = None
+
         self.idle_state = IdleState(self)
         self.run_state = RunState(self)
         self.grab_state = GrabState(self)
@@ -45,6 +47,7 @@ class Player:
 
     def update(self):
         speed = self.run_speed
+        event = None
         for a in self.attackers:
             speed = speed - a.run_speed * random.uniform(0.8, 1.2)
             self.stemina -= 1
@@ -66,19 +69,22 @@ class Player:
                         self.stemina = 0
                         self.dash = False
                     speed = speed * 1.5
-            self.position.x += self.direction.x * speed.x
-            self.position.y += self.direction.y * speed.y
+            event = speed
             self.stemina += 1
             if self.stemina >= 100:
                 self.stemina = 100
         self.controller.update()
+        if self.current_state is self.tackle_state:
+            event = self.tackle_to
+        self.current_state.update(event)
 
     def handle_event(self, event):
         self.controller.handle_event(event)
 
     def startAnimation(self):
         self.current_state.enter()
-        self.current_state.frame = random.randrange(0, len(self.current_state._clip_points))
+        if self.current_state is not self.tackle_state:
+            self.current_state.frame = random.randrange(0, len(self.current_state._clip_points))
 
     def draw(self):
         size = 1
@@ -108,7 +114,7 @@ class Player:
             )
             
         if time.time() - self.__prev_draw_time > 1 / self.current_state.fps:
-            self.current_state.frame = (self.current_state.frame + 1) % len(self.current_state._clip_points)
+            self.current_state.nextFrame()
             self.__prev_draw_time = time.time()
 
     def catch(self, ball):
@@ -182,6 +188,15 @@ class Player:
         self.grabbed_opponent.attackers.remove(self)
         self.grabbed_opponent = None
         self.grabbed_offset = Point(0, 0)
+
+    def tackle(self, x, y):
+        to = Vector(x - self.position.x, y - self.position.y)
+        if self.position.x < x:
+            self.flip = False
+        else:
+            self.flip = True
+        self.tackle_to = to.unit()
+        self.current_state.tackle()
 
 
 '''
