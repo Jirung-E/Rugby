@@ -28,7 +28,7 @@ class Ball:
             self.height = 80
             return
         
-        print(self.velocity.x, self.velocity.y)
+        # print(self.velocity.x, self.velocity.y)
 
         self.position.x += self.velocity.x
         self.position.y += self.velocity.y

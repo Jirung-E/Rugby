@@ -14,6 +14,9 @@ class Vector:
     def __truediv__(self, rhs):
         return Vector(self.x / rhs, self.y / rhs)
     
+    def __div__(self, rhs):
+        return Vector(self.x // rhs, self.y // rhs)
+    
     def __add__(self, rhs):
         return Vector(self.x + rhs.x, self.y + rhs.y)
     

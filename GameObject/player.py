@@ -14,6 +14,8 @@ class Player:
         self.position = Point(0, 0)
         self.direction = Vector(0, 0)
         self.run_speed = Vector(5, 3)
+        self.stemina = 100
+        self.dash = False
 
         self.state = None
         self.controller: Controller = None
@@ -33,8 +35,20 @@ class Player:
         self.__prev_draw_time = time.time()
 
     def update(self):
-        self.position.x += self.direction.x * self.run_speed.x
-        self.position.y += self.direction.y * self.run_speed.y
+        speed = self.run_speed
+        if self.dash:
+            if self.direction.x != 0 or self.direction.y != 0:
+                self.stemina -= 1
+                print(self.stemina)
+                if self.stemina <= 0:
+                    self.stemina = 0
+                    self.dash = False
+                speed = self.run_speed * 1.8
+        else:
+            if self.stemina < 100:
+                self.stemina += 1
+        self.position.x += self.direction.x * speed.x
+        self.position.y += self.direction.y * speed.y
         self.controller.update()
 
     def handle_event(self, event):
@@ -104,7 +118,7 @@ class Player:
         D = direction.length()
         r = math.tan(math.radians(45))
         d = (D**2 * r) / (h + D*r)
-        a = -r/d
+        a = -r/d if d != 0 else 0
         b = h - a * d**2 / 4
         vz = math.sqrt(2 * self.ball.gravity * (b-h))
         self.ball.velocity_z = vz

@@ -1,6 +1,6 @@
 from GameObject.controller import Controller
 
-from sdl2 import SDL_KEYDOWN, SDL_KEYUP, SDLK_w, SDLK_a, SDLK_s, SDLK_d
+from sdl2 import SDL_KEYDOWN, SDL_KEYUP, SDLK_w, SDLK_a, SDLK_s, SDLK_d, SDLK_LSHIFT
 
 
 class Controllable(Controller):
@@ -20,6 +20,9 @@ class Controllable(Controller):
                 self.client.direction.y += 1
             elif event.key == SDLK_s:
                 self.client.direction.y -= 1
+            elif event.key == SDLK_LSHIFT:
+                if self.client.stemina > 0:
+                    self.client.dash = True
         elif event.type == SDL_KEYUP:
             if event.key == SDLK_a:
                 self.client.direction.x += 1
@@ -29,6 +32,8 @@ class Controllable(Controller):
                 self.client.direction.y -= 1
             elif event.key == SDLK_s:
                 self.client.direction.y += 1
+            elif event.key == SDLK_LSHIFT:
+                self.client.dash = False
 
         if self.client.direction.x == 0 and self.client.direction.y == 0:
             self.client.current_state.idle()
