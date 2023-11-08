@@ -1,10 +1,12 @@
-from GameObject.controller import Controller
-from GameObject.state import *
+from Game.GameObject.controller import Controller
+from Game.GameObject.state import *
+from Game.GameObject.ball import Ball
+import Game.game_framework as game_framework
+import Game.world as world
 
 from Math import *
-from GameObject.ball import Ball
 
-from pico2d import Image
+from pico2d import Image, draw_rectangle
 import math
 import random
 import time
@@ -15,8 +17,10 @@ class Player:
     def __init__(self):
         self.position = Point(0, 0)
         self.direction = Vector(0, 0)
-        self.run_speed = Vector(5, 3)
-        self.stemina = 100
+        self.run_speed = Vector(5, 3) * game_framework.PIXEL_PER_METER
+        self.stemina_max = 200
+        self.stemina = self.stemina_max
+        self.stemina_regen = 1  # per second
         self.dash = False
 
         self.state = None
@@ -31,14 +35,14 @@ class Player:
 
         self.grabbed_opponent = None            # 지금 잡고있는 상대방
         self.grabbed_offset = Point(0, 0)       # 잡고있는 상대방의 상대좌표
-        self.attackers: List[Player] = []       # 공격하는 상대방들
+        self.attackers: List[Player] = []       # 공격하는 상대방들 
 
         self.tackle_to = None
 
         self.idle_state = IdleState(self)
         self.run_state = RunState(self)
+        self.dash_state = DashState(self)
         self.grab_state = GrabState(self)
-        self.grabbed_state = GrabbedState(self)
         self.tackle_state = TackleState(self)
         self.current_state: State = self.idle_state
         self.startAnimation()
@@ -46,37 +50,20 @@ class Player:
         self.__prev_draw_time = time.time()
 
     def update(self):
-        speed = self.run_speed
-        event = None
-        for a in self.attackers:
-            speed = speed - a.run_speed * random.uniform(0.8, 1.2)
-            self.stemina -= 1
-            if self.stemina <= 0:
-                self.stemina = 0
         if self.grabbed_opponent is not None:
-            self.position.x = self.grabbed_opponent.position.x - self.grabbed_offset.x
-            self.position.y = self.grabbed_opponent.position.y - self.grabbed_offset.y
+            print(self.grabbed_opponent.stemina)
+            self.position = self.grabbed_opponent.position + -self.grabbed_offset
             self.stemina -= 1
             if self.stemina <= 0:
                 self.stemina = 0
                 self.release()
-        else:
-            if self.dash:
-                if self.direction.x != 0 or self.direction.y != 0:
-                    self.stemina -= 1
-                    print(self.stemina)
-                    if self.stemina <= 0:
-                        self.stemina = 0
-                        self.dash = False
-                    speed = speed * 1.5
-            event = speed
-            self.stemina += 1
-            if self.stemina >= 100:
-                self.stemina = 100
+                
+        self.stemina += 1
+        if self.stemina >= self.stemina_max:
+            self.stemina = self.stemina_max
+
         self.controller.update()
-        if self.current_state is self.tackle_state:
-            event = self.tackle_to
-        self.current_state.update(event)
+        self.current_state.update()
 
     def handle_event(self, event):
         self.controller.handle_event(event)
@@ -117,6 +104,8 @@ class Player:
             self.current_state.nextFrame()
             self.__prev_draw_time = time.time()
 
+        draw_rectangle(*self.get_bb())
+
     def catch(self, ball):
         if self.ball is not None:
             return
@@ -124,12 +113,12 @@ class Player:
             return
         if ball.height > 70:
             return
-        if Point.distance2(self.position, ball.position) < 30**2:
-            print(Point.distance(self.position, ball.position))
-            print('catch')
-            ball.owner = self
-            self.ball = ball
-            ball.rotate = 0
+        # if Point.distance2(self.position, ball.position) < 30**2:
+            # print(Point.distance(self.position, ball.position))
+        print('catch')
+        ball.owner = self
+        self.ball = ball
+        ball.rotate = 0
 
     def throw(self, x, y):
         if self.ball is None:
@@ -157,30 +146,27 @@ class Player:
         self.ball.owner = None
         self.ball = None
 
-    def grab(self, objects):
+    def grab(self):
         if self.ball is not None:
             return
         if self.grabbed_opponent is not None:
             return
         
-        for o in objects:
-            if isinstance(o, Ball):
-                self.catch(o)
-                if self.ball is not None:
-                    return
-        
-        for o in objects:
+        for o in world.objects[world.OBJECT_LAYER]:
             if o is self:
                 continue
-            if isinstance(o, Player):
-                if o.team == self.team:
-                    continue
-                if Point.distance2(self.position, o.position) < 30**2:
-                    self.grabbed_opponent = o
-                    o.attackers.append(self)
-                    self.grabbed_offset = Point(o.position.x - self.position.x, o.position.y - self.position.y)
-                    return
-                
+            if world.collide(o, self):
+                if isinstance(o, Ball):
+                    self.catch(o)
+                    if self.ball is not None:
+                        return
+                elif isinstance(o, Player):
+                    if o.team != self.team:
+                        self.grabbed_opponent = o
+                        o.attackers.append(self)
+                        self.grabbed_offset = Point(o.position.x - self.position.x, o.position.y - self.position.y)
+                        return
+
     def release(self):
         if self.grabbed_opponent is None:
             return
@@ -198,13 +184,10 @@ class Player:
         self.tackle_to = to.unit()
         self.current_state.tackle()
 
-
-'''
-## AI & 플레이어
-겹치는 부분: +, 다른 부분: -
-+ 이동속도
-+ 애니메이션
-+ 상태변화
-+ 이미지..?
-- 플레이어는 키보드로 조작, AI는 자동으로 움직임
-'''
+    def get_bb(self):
+        return (self.position.x-30, self.position.y, self.position.x+30, self.position.y+60)
+    
+    def handle_collision(self, group, other):
+        if group == "ball:player":
+            self.catch(other)
+                

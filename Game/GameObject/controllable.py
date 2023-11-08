@@ -1,14 +1,14 @@
-from GameObject.controller import Controller
+from Game.GameObject.controller import Controller
 
 from sdl2 import SDL_KEYDOWN, SDL_KEYUP, SDLK_w, SDLK_a, SDLK_s, SDLK_d, SDLK_LSHIFT, SDLK_SPACE, \
     SDL_MOUSEBUTTONDOWN, SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT
-
-from GameObject.player import Player
+from pico2d import get_canvas_height
 
 
 class Controllable(Controller):
-    def __init__(self, client: Player):
+    def __init__(self, client):
         super().__init__(client)
+        self.dash = False
 
     def update(self):
         pass
@@ -25,7 +25,9 @@ class Controllable(Controller):
                 self.client.direction.y -= 1
             elif event.key == SDLK_LSHIFT:
                 if self.client.stemina > 0:
-                    self.client.dash = True
+                    self.dash = True
+            elif event.key == SDLK_SPACE:
+                self.client.grab()
         elif event.type == SDL_KEYUP:
             if event.key == SDLK_a:
                 self.client.direction.x += 1
@@ -36,14 +38,24 @@ class Controllable(Controller):
             elif event.key == SDLK_s:
                 self.client.direction.y += 1
             elif event.key == SDLK_LSHIFT:
-                self.client.dash = False
+                self.dash = False
             elif event.key == SDLK_SPACE:
                 self.client.release()
+        elif event.type == SDL_MOUSEBUTTONDOWN:
+            HEIGHT = get_canvas_height()
+            if event.button == SDL_BUTTON_LEFT:
+                self.client.throw(event.x, HEIGHT - event.y)
+            elif event.button == SDL_BUTTON_RIGHT:
+                self.client.tackle(event.x, HEIGHT - event.y)
 
         if self.client.direction.x == 0 and self.client.direction.y == 0:
             self.client.current_state.idle()
         else:
-            self.client.current_state.run()
+            if self.dash:
+                self.client.current_state.dash()
+            else:
+                self.client.current_state.run()
+
             if self.client.direction.x > 0:
                 self.client.flip = False
             elif self.client.direction.x < 0:

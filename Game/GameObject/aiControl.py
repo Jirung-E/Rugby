@@ -1,4 +1,4 @@
-from GameObject.controller import Controller
+from Game.GameObject.controller import Controller
 
 import random
 
@@ -13,8 +13,14 @@ class AIControl(Controller):
                 self.client.throw(500, 300)
             elif self.client.position.x < 100:
                 self.client.throw(300, 300)
-            self.client.current_state.run()
-            self.client.dash = True
+                
+            if self.client.stemina > 50:
+                self.client.current_state.dash()
+            elif self.client.stemina > 0:
+                self.client.current_state.run()
+            else:
+                self.client.throw(400, 300)
+
             if self.client.team == 1:
                 self.client.direction.x = 1
                 self.client.flip = False

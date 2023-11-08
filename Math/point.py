@@ -9,6 +9,9 @@ class Point:
     def __add__(self, rhs):
         return Point(self.x + rhs.x, self.y + rhs.y)
     
+    def __neg__(self):
+        return Point(-self.x, -self.y)
+    
     @staticmethod
     def distance(a, b):
         return math.sqrt(Point.distance2(a, b))

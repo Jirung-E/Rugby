@@ -1,5 +1,8 @@
 from Math import *
 
+import Game.game_framework as game_framework
+
+import random
 from abc import ABC, abstractmethod
 from typing import List
 
@@ -27,6 +30,10 @@ class State(ABC):
 
     @abstractmethod
     def run(self):
+        pass
+
+    @abstractmethod
+    def dash(self):
         pass
 
     @abstractmethod
@@ -64,6 +71,11 @@ class IdleState(State):
         self.client.current_state = self.client.run_state
         self.client.startAnimation()
 
+    def dash(self):
+        self.exit()
+        self.client.current_state = self.client.dash_state
+        self.client.startAnimation()
+
     def idle(self):
         pass
 
@@ -95,11 +107,31 @@ class RunState(State):
         self._clip_height = 120
 
     def update(self, event=None):
-        self.client.position.x += self.client.direction.x * event.x
-        self.client.position.y += self.client.direction.y * event.y
+        speed = Vector(self.client.run_speed.x * self.client.direction.x, 
+                       self.client.run_speed.y * self.client.direction.y)
+        self._update(speed)
+
+    def _update(self, speed):
+        d = self.client.team * 2 - 3    # 끌고갈 방향
+        for a in self.client.attackers:
+            other_speed = Vector(a.run_speed.x * -d, 
+                                 a.run_speed.y * self.client.direction.y)
+            speed = speed - other_speed * random.uniform(0.5, 1.5)
+            if self.client.stemina <= 0:
+                self.client.stemina = 0
+                return
+            self.client.stemina -= 1
+
+        self.client.position += speed * game_framework.dt
 
     def run(self):
         pass
+
+    def dash(self):
+        self.exit()
+        self.client.current_state = self.client.dash_state
+        self.client.startAnimation()
+        self.client.current_state.frame = self.frame
 
     def idle(self):
         self.exit()
@@ -123,11 +155,40 @@ class RunState(State):
         pass
 
 
+class DashState(RunState):
+    def __init__(self, client):
+        super().__init__(client)
+
+    def update(self):
+        if self.client.stemina <= 0:
+            self.client.stemina = 0
+            self.run()
+            return
+        self.client.stemina -= 1
+        
+        speed = Vector(self.client.run_speed.x * self.client.direction.x, 
+                       self.client.run_speed.y * self.client.direction.y) * 1.5
+        
+        self._update(speed)
+
+    def run(self):
+        self.exit()
+        self.client.current_state = self.client.run_state
+        self.client.startAnimation()
+        self.client.current_state.frame = self.frame
+
+    def dash(self):
+        pass
+
+
 class GrabState(State):
     def __init__(self, client):
         super().__init__(client)
 
     def run(self):
+        pass
+
+    def dash(self):
         pass
 
     def idle(self):
@@ -150,29 +211,6 @@ class GrabState(State):
         self.client.startAnimation()
 
 
-class GrabbedState(State):
-    def __init__(self, client):
-        super().__init__(client)
-
-    def run(self):
-        pass
-
-    def idle(self):
-        pass
-
-    def grab(self):
-        pass
-
-    def grabbed(self):
-        pass
-
-    def tackle(self):
-        pass
-
-    def release(self):
-        pass
-
-
 class TackleState(State):
     def __init__(self, client):
         super().__init__(client)
@@ -180,9 +218,12 @@ class TackleState(State):
         self._clip_points: List[Point] = [Point(420, 0)] * 5
         y = 318
         self._clip_points += [Point(481, y), Point(550, y), Point(625, y), 
-                                          Point(713, y), Point(794, y), Point(794+72+1, y)]
+                              Point(713, y), Point(794, y), Point(794+72+1, y)]
         self._clip_width = [70]*5 + [68, 74, 87, 80, 72, 80]
         self._clip_height = 120
+
+        RUN_SPEED_MPS = 10
+        self.RUN_SPEED_PPS = (RUN_SPEED_MPS * game_framework.PIXEL_PER_METER)
 
     def update(self, event=None):
         if self.frame >= len(self._clip_points)-1:
@@ -191,10 +232,17 @@ class TackleState(State):
             self.client.current_state = self.client.idle_state
             self.client.startAnimation()
         elif self.frame >= 5:
-            self.client.position.x += event.x * 10
-            self.client.position.y += event.y * 10
+            self.client.position += self.client.tackle_to * self.RUN_SPEED_PPS * game_framework.dt
+        
+        if self.client.tackle_to.x > 0:
+            self.client.flip = False
+        elif self.client.tackle_to.x < 0:
+            self.client.flip = True
 
     def run(self):
+        pass
+
+    def dash(self):
         pass
 
     def idle(self):
