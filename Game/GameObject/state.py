@@ -107,8 +107,11 @@ class RunState(State):
         self._clip_height = 120
 
     def update(self, event=None):
-        speed = Vector(self.client.run_speed.x * self.client.direction.x, 
-                       self.client.run_speed.y * self.client.direction.y)
+        dir = self.client.direction
+        if self.client.direction.x != 0 and self.client.direction.y != 0:
+            dir = self.client.direction.unit()
+        speed = Vector(self.client.run_speed.x * dir.x, 
+                       self.client.run_speed.y * dir.y)
         self._update(speed)
 
     def _update(self, speed):
