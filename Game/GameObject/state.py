@@ -7,6 +7,14 @@ from abc import ABC, abstractmethod
 from typing import List
 
 
+class ClipData:
+    def __init__(self, point, width, height):
+        self.x = point.x
+        self.y = point.y
+        self.width = width
+        self.height = height
+
+
 class State(ABC):
     def __init__(self, client):
         self.client = client
@@ -15,6 +23,9 @@ class State(ABC):
         self._clip_width: List[int]
         self._clip_height: int
         self.fps = 5
+
+    def clip_data(self):
+        return ClipData(self._clip_points[self.frame], self._clip_width[self.frame], self._clip_height)
 
     def enter(self, event=None):
         self.frame = 0

@@ -75,30 +75,19 @@ class Player:
 
     def draw(self):
         size = 1
+        flip = ''
         if self.flip:
-            self.image.clip_composite_draw(
-                self.current_state._clip_points[self.current_state.frame].x, 
-                self.current_state._clip_points[self.current_state.frame].y, 
-                self.current_state._clip_width[self.current_state.frame], 
-                self.current_state._clip_height, 
-                0,
-                'h',
-                self.position.x - self.pivot.x, 
-                self.position.y - self.pivot.y, 
-                self.current_state._clip_width[self.current_state.frame] * size, 
-                self.current_state._clip_height * size
-            )
-        else:
-            self.image.clip_draw(
-                self.current_state._clip_points[self.current_state.frame].x, 
-                self.current_state._clip_points[self.current_state.frame].y, 
-                self.current_state._clip_width[self.current_state.frame], 
-                self.current_state._clip_height, 
-                self.position.x - self.pivot.x, 
-                self.position.y - self.pivot.y, 
-                self.current_state._clip_width[self.current_state.frame] * size, 
-                self.current_state._clip_height * size
-            )
+            flip = 'h'
+
+        clip_data = self.current_state.clip_data()
+
+        self.image.clip_composite_draw(
+            clip_data.x, clip_data.y, 
+            clip_data.width, clip_data.height, 
+            0, flip,
+            self.position.x - self.pivot.x, self.position.y - self.pivot.y, 
+            clip_data.width * size, clip_data.height * size
+        )
             
         if time.time() - self.__prev_draw_time > 1 / self.current_state.fps:
             self.current_state.nextFrame()
