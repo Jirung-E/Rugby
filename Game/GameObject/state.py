@@ -131,6 +131,8 @@ class RunState(State):
             other_speed = Vector(a.run_speed.x * -d, 
                                  a.run_speed.y * self.client.direction.y)
             speed = speed - other_speed * random.uniform(0.5, 1.5)
+            if speed.length() > self.client.run_speed.length():
+                speed = speed.unit() * self.client.run_speed.length()
             if self.client.stemina <= 0:
                 self.client.stemina = 0
                 return

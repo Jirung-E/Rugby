@@ -12,4 +12,8 @@ class Controller(ABC):
     @abstractmethod
     def handle_event(self, event):
         pass
+
+    @abstractmethod
+    def handle_collision(self, group, other):
+        pass
     

@@ -26,7 +26,7 @@ def init():
     global background
     global ball
     global ball_shadow
-    global team1, team2
+    global team
     global player
 
     background = Field()
@@ -41,35 +41,29 @@ def init():
     ball_shadow.position = Point(400, 300)
     world.add_object(ball_shadow, world.SHADOW_LAYER)
 
-    team1_image = load_image('res/player1.png')
-    team2_image = load_image('res/player2.png')
+    team_image = [ load_image('res/player1.png'), load_image('res/player2.png') ]
 
-    team1 = [Player() for _ in range(0, 11)]
-    for i in range(11):
-        team1[i].position.x = random.randint(100-20, 100+20)
-        team1[i].position.y = 20 + i * 50
-        team1[i].controller = AIControl(team1[i])
-        team1[i].image = team1_image
-        team1[i].team = 1
-        world.add_collision_pair("ball:player", None, team1[i])
-    team2 = [Player() for _ in range(0, 11)]
-    for i in range(11):
-        team2[i].position.x = random.randint(700-20, 700+20)
-        team2[i].position.y = 20 + i * 50
-        team2[i].controller = AIControl(team2[i])
-        team2[i].flip = True
-        team2[i].image = team2_image
-        team2[i].team = 2
-        world.add_collision_pair("ball:player", None, team2[i])
-    world.add_objects(team1, world.OBJECT_LAYER)
-    world.add_objects(team2, world.OBJECT_LAYER)
+    team = {}
+    for t in range(2):
+        team[t] = [Player() for _ in range(0, 11)]
+        for i in range(11):
+            x = 100 + t * 600
+            team[t][i].position.x = random.randint(x-20, x+20)
+            team[t][i].position.y = 20 + i * 50
+            team[t][i].controller = AIControl(team[t][i])
+            team[t][i].image = team_image[t]
+            team[t][i].team = t+1
+            world.add_collision_pair("ball:player", None, team[t][i])
+            if t == 0:
+                world.add_collision_pair("player:player", team[0][i], None)
+            else:
+                world.add_collision_pair("player:player", None, team[1][i])
+    world.add_objects(team[0], world.OBJECT_LAYER)
+    world.add_objects(team[1], world.OBJECT_LAYER)
 
     num = random.randrange(11)
-    team = random.randrange(2)
-    if team == 0:
-        player = team1[num]
-    else:
-        player = team2[num]
+    t = random.randrange(2)
+    player = team[t][num]
     player.position = Point(400, 300)
     player.controller = Controllable(player)
     world.collision_pairs["ball:player"][1].remove(player)

@@ -135,26 +135,14 @@ class Player:
         self.ball.owner = None
         self.ball = None
 
-    def grab(self):
-        if self.ball is not None:
-            return
+    def grab(self, other):
         if self.grabbed_opponent is not None:
             return
         
-        for o in world.objects[world.OBJECT_LAYER]:
-            if o is self:
-                continue
-            if world.collide(o, self):
-                if isinstance(o, Ball):
-                    self.catch(o)
-                    if self.ball is not None:
-                        return
-                elif isinstance(o, Player):
-                    if o.team != self.team:
-                        self.grabbed_opponent = o
-                        o.attackers.append(self)
-                        self.grabbed_offset = Point(o.position.x - self.position.x, o.position.y - self.position.y)
-                        return
+        if other.team != self.team:
+            self.grabbed_opponent = other
+            other.attackers.append(self)
+            self.grabbed_offset = other.position + -self.position
 
     def release(self):
         if self.grabbed_opponent is None:
@@ -177,6 +165,5 @@ class Player:
         return (self.position.x-30, self.position.y, self.position.x+30, self.position.y+60)
     
     def handle_collision(self, group, other):
-        if group == "ball:player":
-            self.catch(other)
+        self.controller.handle_collision(group, other)
                 
