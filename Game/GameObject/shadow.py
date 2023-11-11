@@ -1,6 +1,7 @@
 from pico2d import load_image, Image
 
 from Math import Point
+import Game.play_scene as play_scene
 
 
 class Shadow:
@@ -11,7 +12,8 @@ class Shadow:
         self.offset = offset
 
     def draw(self):
-        self.image.draw(self.position.x, self.position.y)
+        draw_position = self.position + self.offset + -play_scene.player.position + Point(400, 300)
+        self.image.draw(draw_position.x, draw_position.y)
 
     def update(self):
         self.position = self.caster.position + self.offset

@@ -1,5 +1,6 @@
 from Math import *
 import Game.game_framework as game_framework
+import Game.play_scene as play_scene
 
 import random
 
@@ -67,8 +68,15 @@ class Ball:
 
 
     def draw(self):
-        self.image.composite_draw(self.rotate, '', self.position.x, self.position.y+30 + self.height)
-        draw_rectangle(*self.get_bb())
+        draw_position = self.position + Point(0, self.height) + -play_scene.player.position + Point(400, 300)
+        self.image.composite_draw(self.rotate, '', draw_position.x, draw_position.y+30)
+
+        x1, y1, x2, y2 = self.get_bb()
+        x1 = x1 + -play_scene.player.position.x + 400
+        y1 = y1 + -play_scene.player.position.y + 300
+        x2 = x2 + -play_scene.player.position.x + 400
+        y2 = y2 + -play_scene.player.position.y + 300
+        draw_rectangle(x1, y1, x2, y2)
 
     def get_bb(self):
         return (self.position.x - 40, self.position.y - 40, self.position.x + 40, self.position.y + 40)

@@ -1,6 +1,7 @@
 from Game.GameObject.controller import Controller
 import Game.play_scene as play_scene
 import Game.world as world
+from Math import Point
 
 from sdl2 import SDL_KEYDOWN, SDL_KEYUP, SDLK_w, SDLK_a, SDLK_s, SDLK_d, SDLK_LSHIFT, SDLK_SPACE, \
     SDL_MOUSEBUTTONDOWN, SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT
@@ -79,11 +80,15 @@ class Controllable(Controller):
             self.client.release()
 
     def handle_mousedown(self, button, x, y):
+        # 클릭 좌표에서 플레이어 기준 좌표계로 변환
         HEIGHT = get_canvas_height()
+        y = HEIGHT - y
+        x = play_scene.player.position.x - 400 + x
+        y = play_scene.player.position.y - 300 + y
         if button == SDL_BUTTON_LEFT:
-            self.client.throw(x, HEIGHT - y)
+            self.client.throw(x, y)
         elif button == SDL_BUTTON_RIGHT:
-            self.client.tackle(x, HEIGHT - y)
+            self.client.tackle(x, y)
 
     def handle_collision(self, group, other):
         pass

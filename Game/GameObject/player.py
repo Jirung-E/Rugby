@@ -3,6 +3,7 @@ from Game.GameObject.state import *
 from Game.GameObject.ball import Ball
 import Game.game_framework as game_framework
 import Game.world as world
+import Game.play_scene as play_scene
 
 from Math import *
 
@@ -74,6 +75,7 @@ class Player:
             self.current_state.frame = random.randrange(0, len(self.current_state._clip_points))
 
     def draw(self):
+        draw_position = self.position + -self.pivot + -play_scene.player.position + Point(400, 300)
         size = 1
         flip = ''
         if self.flip:
@@ -85,7 +87,7 @@ class Player:
             clip_data.x, clip_data.y, 
             clip_data.width, clip_data.height, 
             0, flip,
-            self.position.x - self.pivot.x, self.position.y - self.pivot.y, 
+            draw_position.x, draw_position.y, 
             clip_data.width * size, clip_data.height * size
         )
             
@@ -93,7 +95,12 @@ class Player:
             self.current_state.nextFrame()
             self.__prev_draw_time = time.time()
 
-        draw_rectangle(*self.get_bb())
+        x1, y1, x2, y2 = self.get_bb()
+        x1 = x1 + -play_scene.player.position.x + 400
+        y1 = y1 + -play_scene.player.position.y + 300
+        x2 = x2 + -play_scene.player.position.x + 400
+        y2 = y2 + -play_scene.player.position.y + 300
+        draw_rectangle(x1, y1, x2, y2)
 
     def catch(self, ball):
         if self.ball is not None:
