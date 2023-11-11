@@ -51,9 +51,9 @@ class Player:
 
     def update(self):
         if self.grabbed_opponent is not None:
-            print(self.grabbed_opponent.stemina)
+            # print(self.grabbed_opponent.stemina)
             self.position = self.grabbed_opponent.position + -self.grabbed_offset
-            self.stemina -= 1
+            self.stemina -= 2
             if self.stemina <= 0:
                 self.stemina = 0
                 self.release()
