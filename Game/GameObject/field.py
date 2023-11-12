@@ -10,7 +10,7 @@ class Field:
 
     def draw(self):
         draw_position = -play_scene.player.position + Point(400, 300)
-        size = 2
+        size = 3
         self.image.draw(draw_position.x+400, draw_position.y+300, self.image.w*size, self.image.h*size)
 
     def update(self):
