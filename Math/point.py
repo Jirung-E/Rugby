@@ -12,6 +12,9 @@ class Point:
     def __neg__(self):
         return Point(-self.x, -self.y)
     
+    def __mul__(self, rhs):
+        return Point(self.x * rhs, self.y * rhs)
+    
     @staticmethod
     def distance(a, b):
         return math.sqrt(Point.distance2(a, b))

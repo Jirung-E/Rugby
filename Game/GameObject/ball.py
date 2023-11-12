@@ -10,10 +10,10 @@ from pico2d import Image, load_image, draw_rectangle
 class Ball:
     def __init__(self):
         self.position = Point(0, 0)
-        self.height = 5     # position z
+        self.height = 2     # position z
         self.velocity = Vector(0, 0)
-        self.velocity_z = random.uniform(5.5, 7.0) * game_framework.PIXEL_PER_METER
-        self.gravity = 10.0 * game_framework.PIXEL_PER_METER    # 10m/s^2
+        self.velocity_z = random.uniform(1.0, 2.0)
+        self.gravity = 10.0     # m/s^2
         self.rotate = 0
         self.rotate_power = random.uniform(0.5, 3)
         self.rotate_dir = random.choice([-1, 1])
@@ -26,7 +26,7 @@ class Ball:
         if self.owner is not None:
             self.position.x = self.owner.position.x
             self.position.y = self.owner.position.y
-            self.height = 80
+            self.height = 1
             return
 
         dt = game_framework.dt
@@ -55,31 +55,42 @@ class Ball:
             if self.rotate_power < 0:
                 self.rotate_power = 0
 
-        if self.position.x < 0:
-            self.velocity.x = abs(self.velocity.x)
-        elif self.position.x > 800:
-            self.velocity.x = -abs(self.velocity.x)
-        if self.position.y < 0:
-            self.velocity.y = abs(self.velocity.y)
-        elif self.position.y > 600:
-            self.velocity.y = -abs(self.velocity.y)
+        # if self.position.x < 0:
+        #     self.velocity.x = abs(self.velocity.x)
+        # elif self.position.x > 800:
+        #     self.velocity.x = -abs(self.velocity.x)
+        # if self.position.y < 0:
+        #     self.velocity.y = abs(self.velocity.y)
+        # elif self.position.y > 600:
+        #     self.velocity.y = -abs(self.velocity.y)
 
         self.rotate += self.rotate_power * self.rotate_dir * dt
 
 
     def draw(self):
-        draw_position = self.position + Point(0, self.height) + -play_scene.player.position + Point(400, 300)
-        self.image.composite_draw(self.rotate, '', draw_position.x, draw_position.y+30)
+        print(self.position.x)
+        draw_position = self.position + -play_scene.player.position + Point(0, self.height)
+        draw_position *= game_framework.PIXEL_PER_METER
+        draw_position += play_scene.window_center + Point(0, 30)
+        self.image.composite_draw(self.rotate, '', draw_position.x, draw_position.y)
 
         x1, y1, x2, y2 = self.get_bb()
-        x1 = x1 + -play_scene.player.position.x + 400
-        y1 = y1 + -play_scene.player.position.y + 300
-        x2 = x2 + -play_scene.player.position.x + 400
-        y2 = y2 + -play_scene.player.position.y + 300
+        x1 += -play_scene.player.position.x
+        x1 *= game_framework.PIXEL_PER_METER
+        x1 += play_scene.window_center.x
+        y1 += -play_scene.player.position.y
+        y1 *= game_framework.PIXEL_PER_METER
+        y1 += play_scene.window_center.y
+        x2 += -play_scene.player.position.x
+        x2 *= game_framework.PIXEL_PER_METER
+        x2 += play_scene.window_center.x
+        y2 += -play_scene.player.position.y
+        y2 *= game_framework.PIXEL_PER_METER
+        y2 += play_scene.window_center.y
         draw_rectangle(x1, y1, x2, y2)
 
     def get_bb(self):
-        return (self.position.x - 40, self.position.y - 40, self.position.x + 40, self.position.y + 40)
+        return (self.position.x - 0.5, self.position.y - 0.5, self.position.x + 0.5, self.position.y + 0.5)
     
     def handle_collision(self, group, other):
         if group == "ball:player":

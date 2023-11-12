@@ -7,9 +7,7 @@ import Game.world as world
 from Game.GameObject import *
 from Math import *
 
-
-WIDTH = 800
-HEIGHT = 600
+window_center = Point(400, 300)
 
 
 def handle_events():
@@ -23,33 +21,37 @@ def handle_events():
             player.handle_event(event)
 
 def init():
-    global background
+    global field
     global ball
     global ball_shadow
     global team
     global player
+    global goal_zone
 
-    background = Field()
-    world.add_object(background, world.BACKGROUND_LAYER)
+    field = Field()
+    world.add_object(field, world.BACKGROUND_LAYER)
 
     ball = Ball()
-    ball.position = Point(400, 300)
+    ball.position = Point(0, 0)
     world.add_object(ball, world.OBJECT_LAYER)
     world.add_collision_pair("ball:player", ball, None)
 
     ball_shadow = Shadow(ball, Point(0, -10))
-    ball_shadow.position = Point(400, 300)
+    ball_shadow.position = Point(0, 0)
     world.add_object(ball_shadow, world.SHADOW_LAYER)
 
     team_image = [ load_image('res/player1.png'), load_image('res/player2.png') ]
 
     team = {}
+    left_end = -field.width / 2
+    bottom_end = -field.height / 2
+    dist = field.height / 10
     for t in range(2):
         team[t] = [Player() for _ in range(0, 11)]
         for i in range(11):
-            x = 100 + t * 600
-            team[t][i].position.x = random.randint(x-20, x+20)
-            team[t][i].position.y = 20 + i * 50
+            x = left_end + t * field.width
+            team[t][i].position.x = x
+            team[t][i].position.y = bottom_end + dist * (i+1)
             team[t][i].controller = AIControl(team[t][i])
             team[t][i].image = team_image[t]
             team[t][i].team = t+1
@@ -64,9 +66,14 @@ def init():
     num = random.randrange(11)
     t = random.randrange(2)
     player = team[t][num]
-    player.position = Point(400, 300)
+    player.position = Point(0, 0)
     player.controller = Controllable(player)
     world.collision_pairs["ball:player"][1].remove(player)
+
+    goal_zone = [GoalZone(), GoalZone()]
+    goal_zone[0].position = Point(left_end, 0)
+    goal_zone[1].position = Point(field.width/2, 0)
+    world.add_objects(goal_zone, world.BACKGROUND_LAYER)
 
 
 def finish():

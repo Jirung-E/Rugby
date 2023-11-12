@@ -18,10 +18,10 @@ class AIControl(Controller):
                 self.client.release()
         if self.client.ball is not None:
             self.run_to_goal()
-            if self.client.position.x > 700:
-                self.client.throw(500, 300)
-            elif self.client.position.x < 100:
-                self.client.throw(300, 300)
+            if self.client.position.x > play_scene.field.width/2-2:
+                self.client.throw_half_power(0, 0)
+            elif self.client.position.x < -play_scene.field.width/2+2:
+                self.client.throw_half_power(0, 0)
         else:
             self.client.current_state.idle()
             if play_scene.ball.owner is None:
@@ -56,10 +56,10 @@ class AIControl(Controller):
         if self.client.stemina > 50:
             self.client.current_state.run()
             # self.client.current_state.dash()
-        elif self.client.stemina > 0:
-            self.client.current_state.run()
+        # elif self.client.stemina > 0:
+        #     self.client.current_state.run()
         else:
-            self.client.throw(self.client.position.x + (self.client.team*2-3)*200, 300)
+            self.client.throw_half_power(0, 0)
 
     def run_to_home(self):
         pass

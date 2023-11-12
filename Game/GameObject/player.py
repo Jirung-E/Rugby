@@ -18,8 +18,8 @@ class Player:
     def __init__(self):
         self.position = Point(0, 0)
         self.direction = Vector(0, 0)
-        self.run_speed = Vector(5, 3) * game_framework.PIXEL_PER_METER
-        self.stemina_max = 200
+        self.run_speed = Vector(5, 3)
+        self.stemina_max = 400
         self.stemina = self.stemina_max
         self.stemina_regen = 1  # per second
         self.dash = False
@@ -75,12 +75,14 @@ class Player:
             self.current_state.frame = random.randrange(0, len(self.current_state._clip_points))
 
     def draw(self):
-        draw_position = self.position + -self.pivot + -play_scene.player.position + Point(400, 300)
         size = 1
         flip = ''
         if self.flip:
             flip = 'h'
 
+        draw_position = self.position + -play_scene.player.position
+        draw_position *= game_framework.PIXEL_PER_METER
+        draw_position += play_scene.window_center + -self.pivot
         clip_data = self.current_state.clip_data()
 
         self.image.clip_composite_draw(
@@ -90,24 +92,33 @@ class Player:
             draw_position.x, draw_position.y, 
             clip_data.width * size, clip_data.height * size
         )
-            
+
         if time.time() - self.__prev_draw_time > 1 / self.current_state.fps:
             self.current_state.nextFrame()
             self.__prev_draw_time = time.time()
 
         x1, y1, x2, y2 = self.get_bb()
-        x1 = x1 + -play_scene.player.position.x + 400
-        y1 = y1 + -play_scene.player.position.y + 300
-        x2 = x2 + -play_scene.player.position.x + 400
-        y2 = y2 + -play_scene.player.position.y + 300
-        draw_rectangle(x1, y1, x2, y2)
+        x1 += -play_scene.player.position.x
+        x1 *= game_framework.PIXEL_PER_METER
+        x1 += play_scene.window_center.x
+        y1 += -play_scene.player.position.y 
+        y1 *= game_framework.PIXEL_PER_METER
+        y1 += play_scene.window_center.y
+        x2 += -play_scene.player.position.x 
+        x2 *= game_framework.PIXEL_PER_METER
+        x2 += play_scene.window_center.x
+        y2 += -play_scene.player.position.y
+        y2 *= game_framework.PIXEL_PER_METER
+        y2 += play_scene.window_center.y
+        draw_rectangle(x1, y1, 
+                       x2, y2)
 
     def catch(self, ball):
         if self.ball is not None:
             return
         if ball.owner is not None:
             return
-        if ball.height > 70:
+        if ball.height > 0.8:
             return
         # if Point.distance2(self.position, ball.position) < 30**2:
             # print(Point.distance(self.position, ball.position))
@@ -116,11 +127,22 @@ class Player:
         self.ball = ball
         ball.rotate = 0
 
+    def throw_double_power(self, x, y):
+        if self.ball is None:
+            return
+        self.throw_direction(Vector(x - self.position.x, y - self.position.y) * 2)
+
+    def throw_half_power(self, x, y):
+        if self.ball is None:
+            return
+        self.throw_direction(Vector(x - self.position.x, y - self.position.y) * 0.5)
+
     def throw(self, x, y):
         if self.ball is None:
             return
-        
-        direction = Vector(x - self.position.x, y - self.position.y)
+        self.throw_direction(Vector(x - self.position.x, y - self.position.y))
+
+    def throw_direction(self, direction):
         if self.team == 1 and direction.x > 0:
             return
         if self.team == 2 and direction.x < 0:
@@ -169,7 +191,7 @@ class Player:
         self.current_state.tackle()
 
     def get_bb(self):
-        return (self.position.x-30, self.position.y, self.position.x+30, self.position.y+60)
+        return (self.position.x-0.25, self.position.y, self.position.x+0.25, self.position.y+0.5)
     
     def handle_collision(self, group, other):
         self.controller.handle_collision(group, other)

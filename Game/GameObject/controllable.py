@@ -1,5 +1,6 @@
 from Game.GameObject.controller import Controller
 import Game.play_scene as play_scene
+import Game.game_framework as game_framework
 import Game.world as world
 from Math import Point
 
@@ -83,10 +84,14 @@ class Controllable(Controller):
         # 클릭 좌표에서 플레이어 기준 좌표계로 변환
         HEIGHT = get_canvas_height()
         y = HEIGHT - y
-        x = play_scene.player.position.x - 400 + x
-        y = play_scene.player.position.y - 300 + y
+        x -= play_scene.window_center.x
+        y -= play_scene.window_center.y
+        x /= game_framework.PIXEL_PER_METER
+        y /= game_framework.PIXEL_PER_METER
+        x += play_scene.player.position.x
+        y += play_scene.player.position.y
         if button == SDL_BUTTON_LEFT:
-            self.client.throw(x, y)
+            self.client.throw_double_power(x, y)
         elif button == SDL_BUTTON_RIGHT:
             self.client.tackle(x, y)
 

@@ -238,8 +238,7 @@ class TackleState(State):
         self._clip_width = [70]*5 + [68, 74, 87, 80, 72, 80]
         self._clip_height = 120
 
-        RUN_SPEED_MPS = 10
-        self.RUN_SPEED_PPS = (RUN_SPEED_MPS * game_framework.PIXEL_PER_METER)
+        self.RUN_SPEED_MPS = 10
 
     def update(self, event=None):
         if self.frame >= len(self._clip_points)-1:
@@ -248,7 +247,7 @@ class TackleState(State):
             self.client.current_state = self.client.idle_state
             self.client.startAnimation()
         elif self.frame >= 5:
-            self.client.position += self.client.tackle_to * self.RUN_SPEED_PPS * game_framework.dt
+            self.client.position += self.client.tackle_to * self.RUN_SPEED_MPS * game_framework.dt
         
         if self.client.tackle_to.x > 0:
             self.client.flip = False
