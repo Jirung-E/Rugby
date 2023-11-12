@@ -68,7 +68,6 @@ class Ball:
 
 
     def draw(self):
-        print(self.position.x)
         draw_position = self.position + -play_scene.player.position + Point(0, self.height)
         draw_position *= game_framework.PIXEL_PER_METER
         draw_position += play_scene.window_center + Point(0, 30)

@@ -49,7 +49,7 @@ def init():
     for t in range(2):
         team[t] = [Player() for _ in range(0, 11)]
         for i in range(11):
-            x = left_end + t * field.width
+            x = left_end+3 + t * (field.width-6)
             team[t][i].position.x = x
             team[t][i].position.y = bottom_end + dist * (i+1)
             team[t][i].controller = AIControl(team[t][i])

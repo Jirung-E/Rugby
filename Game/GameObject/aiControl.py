@@ -14,7 +14,7 @@ class AIControl(Controller):
 
     def update(self):
         if self.client.grabbed_opponent is not None:
-            if self.client.ball is None:
+            if self.client.grabbed_opponent.ball is None:
                 self.client.release()
         if self.client.ball is not None:
             self.run_to_goal()
