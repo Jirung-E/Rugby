@@ -4,6 +4,6 @@ import Game.game_framework as game_framework
 import Game.play_scene as start_scene
 
 
-open_canvas(800, 600)
+open_canvas(start_scene.width, start_scene.height)
 game_framework.run(start_scene)
 close_canvas()

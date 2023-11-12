@@ -7,7 +7,9 @@ import Game.world as world
 from Game.GameObject import *
 from Math import *
 
-window_center = Point(400, 300)
+width = 1200
+height = 800
+window_center = Point(width/2, height/2)
 
 
 def handle_events():
