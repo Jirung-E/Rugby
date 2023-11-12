@@ -160,7 +160,7 @@ class Player:
         vf = vz / r
         self.ball.velocity = direction.unit() * vf
         
-        self.ball.rotate_power = random.uniform(0.1, 0.15)
+        self.ball.rotate_power = random.uniform(3, 8)
         self.ball.owner = None
         self.ball = None
 

@@ -15,7 +15,7 @@ class Ball:
         self.velocity_z = random.uniform(1.0, 2.0)
         self.gravity = 10.0     # m/s^2
         self.rotate = 0
-        self.rotate_power = random.uniform(0.5, 3)
+        self.rotate_power = random.uniform(5, 10)
         self.rotate_dir = random.choice([-1, 1])
 
         self.image: Image = load_image('res/ball_small.png')
@@ -51,7 +51,7 @@ class Ball:
             else:
                 self.velocity_z = -self.velocity_z * 0.7
 
-            self.rotate_power -= 0.002
+            self.rotate_power -= 0.2
             if self.rotate_power < 0:
                 self.rotate_power = 0
 
@@ -65,7 +65,6 @@ class Ball:
         #     self.velocity.y = -abs(self.velocity.y)
 
         self.rotate += self.rotate_power * self.rotate_dir * dt
-
 
     def draw(self):
         draw_position = self.position + -play_scene.player.position + Point(0, self.height)
