@@ -77,6 +77,14 @@ class AIControl(Controller):
             return
         
         if group == "player:player":
-            if other.ball is None:
+            if self.client.current_state == self.client.tackle_state and self.client.current_state.frame > 5:
+                other.fall_to = self.tackle_to
+                other.current_state.fall()
                 return
-            self.client.grab(other)
+            if other.current_state == other.tackle_state and other.current_state.frame > 5:
+                self.client.fall_to = other.tackle_to
+                self.client.current_state.fall()
+                return
+            if other.ball is not None:
+                self.client.grab(other)
+                return

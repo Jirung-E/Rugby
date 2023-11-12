@@ -28,7 +28,7 @@ class State(ABC):
         return ClipData(self._clip_points[self.frame], self._clip_width[self.frame], self._clip_height)
 
     def enter(self, event=None):
-        self.frame = 0
+        self.frame = random.randrange(0, len(self._clip_points))
 
     def exit(self, event=None):
         pass
@@ -65,6 +65,10 @@ class State(ABC):
 
     @abstractmethod
     def release(self):
+        pass
+
+    @abstractmethod
+    def fall(self):
         pass
 
 
@@ -105,6 +109,11 @@ class IdleState(State):
 
     def release(self):
         pass
+
+    def fall(self):
+        self.exit()
+        self.client.current_state = self.client.fall_state
+        self.client.startAnimation()
 
 
 class RunState(State):
@@ -170,6 +179,11 @@ class RunState(State):
     def release(self):
         pass
 
+    def fall(self):
+        self.exit()
+        self.client.current_state = self.client.fall_state
+        self.client.startAnimation()
+
 
 class DashState(RunState):
     def __init__(self, client):
@@ -226,6 +240,11 @@ class GrabState(State):
         self.client.current_state = self.client.idle_state
         self.client.startAnimation()
 
+    def fall(self):
+        self.exit()
+        self.client.current_state = self.client.fall_state
+        self.client.startAnimation()
+
 
 class TackleState(State):
     def __init__(self, client):
@@ -239,6 +258,9 @@ class TackleState(State):
         self._clip_height = 120
 
         self.RUN_SPEED_MPS = 10
+
+    def enter(self, event=None):
+        self.frame = 0
 
     def update(self, event=None):
         if self.frame >= len(self._clip_points)-1:
@@ -273,4 +295,59 @@ class TackleState(State):
         pass
 
     def release(self):
+        pass
+
+    def fall(self):
+        self.exit()
+        self.client.current_state = self.client.fall_state
+        self.client.startAnimation()
+
+
+class FallState(State):
+    def __init__(self, client):
+        super().__init__(client)
+        self.fps = 5
+        self._clip_points = [Point(620, 0), Point(695, 0), Point(695, 0), 
+                             Point(805, 0), Point(805, 0), Point(805, 0)]
+        self._clip_width = [68, 110, 110, 85, 85, 85]
+        self._clip_height = 120
+
+    def enter(self, event=None):
+        if self.client.fall_to.x > 0:
+            self.client.flip = False
+        elif self.client.fall_to.x < 0:
+            self.client.flip = True
+        self.frame = 0
+
+    def update(self, event=None):
+        if self.frame >= len(self._clip_points)-1:
+            self.exit()
+            self.client.current_state = self.client.idle_state
+            self.client.startAnimation()
+            return
+        
+        self.client.position += self.client.fall_to * game_framework.dt
+
+    def run(self):
+        pass        # 넘여져 있을때는 아무것도 못함
+
+    def dash(self):
+        pass
+
+    def idle(self):
+        pass
+
+    def grab(self):
+        pass
+
+    def grabbed(self):
+        pass
+
+    def tackle(self):
+        pass
+
+    def release(self):
+        pass
+
+    def fall(self):
         pass

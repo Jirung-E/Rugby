@@ -70,12 +70,12 @@ def init():
     player = team[t][num]
     player.position = Point(0, 0)
     player.controller = Controllable(player)
-    world.collision_pairs["ball:player"][1].remove(player)
+    # world.collision_pairs["ball:player"][1].remove(player)
 
-    goal_zone = [GoalZone(), GoalZone()]
-    goal_zone[0].position = Point(left_end, 0)
-    goal_zone[1].position = Point(field.width/2, 0)
-    world.add_objects(goal_zone, world.BACKGROUND_LAYER)
+    # goal_zone = [GoalZone(), GoalZone()]
+    # goal_zone[0].position = Point(left_end, 0)
+    # goal_zone[1].position = Point(field.width/2, 0)
+    # world.add_objects(goal_zone, world.BACKGROUND_LAYER)
 
 
 def finish():

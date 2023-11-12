@@ -39,12 +39,14 @@ class Player:
         self.attackers: List[Player] = []       # 공격하는 상대방들 
 
         self.tackle_to = None
+        self.fall_to = None
 
         self.idle_state = IdleState(self)
         self.run_state = RunState(self)
         self.dash_state = DashState(self)
         self.grab_state = GrabState(self)
         self.tackle_state = TackleState(self)
+        self.fall_state = FallState(self)
         self.current_state: State = self.idle_state
         self.startAnimation()
 
@@ -71,11 +73,9 @@ class Player:
 
     def startAnimation(self):
         self.current_state.enter()
-        if self.current_state is not self.tackle_state:
-            self.current_state.frame = random.randrange(0, len(self.current_state._clip_points))
-
+    
     def draw(self):
-        size = 1
+        size = 2
         flip = ''
         if self.flip:
             flip = 'h'
