@@ -57,9 +57,9 @@ class Player:
             # print(self.grabbed_opponent.stemina)
             self.position = self.grabbed_opponent.position + -self.grabbed_offset
             self.stemina -= 2
-            # if self.stemina <= 0:
-            #     self.stemina = 0
-            #     self.release()
+            if self.stemina <= 0:
+                self.stemina = 0
+                # self.release()
                 
         self.stemina += 1
         if self.stemina >= self.stemina_max:

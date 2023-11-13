@@ -320,6 +320,7 @@ class FallState(State):
         self.frame = 0
 
     def update(self, event=None):
+        self.client.release()
         if self.frame >= len(self._clip_points)-1:
             self.exit()
             self.client.current_state = self.client.idle_state
