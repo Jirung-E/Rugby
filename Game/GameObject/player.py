@@ -75,7 +75,7 @@ class Player:
         self.current_state.enter()
     
     def draw(self):
-        size = 2
+        size = 1
         flip = ''
         if self.flip:
             flip = 'h'
