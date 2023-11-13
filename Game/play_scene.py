@@ -47,7 +47,7 @@ def init():
     team = {}
     left_end = -field.width / 2
     bottom_end = -field.height / 2
-    dist = field.height / 10
+    dist = field.height / 12
     for t in range(2):
         team[t] = [Player() for _ in range(0, 11)]
         for i in range(11):
