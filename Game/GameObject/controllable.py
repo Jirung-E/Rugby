@@ -61,7 +61,7 @@ class Controllable(Controller):
                     self.client.catch(play_scene.ball)
                     return
 
-            for other in play_scene.team[self.client.team & 1]:     # 0&2 == 0, 1&1 == 1
+            for other in play_scene.team[self.client.team & 1]:     # 0001 & 0001 = 0001, 0010 & 0001 = 0000
                 if world.collide(self.client, other):
                     self.client.grab(other)
                     break
