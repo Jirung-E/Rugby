@@ -18,7 +18,7 @@ class Player:
     def __init__(self):
         self.position = Point(0, 0)
         self.direction = Vector(0, 0)
-        self.run_speed = Vector(5, 3)
+        self.run_speed = Vector(5, 3)/2
         self.stemina_max = 400
         self.stemina = self.stemina_max
         self.stemina_regen = 1  # per second
