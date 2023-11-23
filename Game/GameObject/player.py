@@ -70,8 +70,8 @@ class Player:
 
         w = play_scene.field.width // 2
         h = play_scene.field.height // 2
-        self.position.x = clamp(-w, self.position.x, w)
-        self.position.y = clamp(-h, self.position.y, h)
+        self.position.x = clamp(-w+1, self.position.x, w-1)
+        self.position.y = clamp(-h+1.5, self.position.y, h-1.5)
 
     def handle_event(self, event):
         self.controller.handle_event(event)

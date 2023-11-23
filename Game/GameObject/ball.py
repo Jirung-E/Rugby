@@ -4,7 +4,7 @@ import Game.play_scene as play_scene
 
 import random
 
-from pico2d import Image, load_image, draw_rectangle
+from pico2d import Image, load_image, draw_rectangle, clamp
 
 
 class Ball:
@@ -30,7 +30,17 @@ class Ball:
             return
 
         dt = game_framework.dt
+
         self.position += self.velocity * dt
+        w = play_scene.field.width // 2
+        h = play_scene.field.height // 2
+        if self.position.x < -w+1 or self.position.x > w-1:
+            self.velocity.x = -self.velocity.x
+        if self.position.y < -h+1.5 or self.position.y > h-1.5:
+            self.velocity.y = -self.velocity.y
+        self.position.x = clamp(-w+1, self.position.x, w-1)
+        self.position.y = clamp(-h+1.5, self.position.y, h-1.5)
+
         self.height += self.velocity_z * dt
         self.velocity_z -= self.gravity * dt
         if self.height <= 0:
