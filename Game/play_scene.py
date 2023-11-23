@@ -48,7 +48,7 @@ def init():
     left_end = -field.width / 2
     bottom_end = -field.height / 2
     dist = field.height / 12
-    member = 3
+    member = 11
     for t in range(2):
         team[t] = [Player() for _ in range(member)]
         for i in range(member):
@@ -69,7 +69,7 @@ def init():
     num = random.randrange(member)
     t = random.randrange(2)
     player = team[t][num]
-    player.position = Point(0, 0)
+    # player.position = Point(0, 0)
     player.controller = Controllable(player)
     # world.collision_pairs["ball:player"][1].remove(player)
 

@@ -219,4 +219,3 @@ class Player:
                 other.current_state.fall()
                 return
         self.controller.handle_collision(group, other)
-                

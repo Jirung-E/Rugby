@@ -1,5 +1,6 @@
 from Game.GameObject.controller import Controller
 import Game.play_scene as play_scene
+import Game.game_framework as game_framework
 import Game.world as world
 from Game.GameObject.ball import Ball
 from Game.GameObject.player import Player
@@ -13,6 +14,8 @@ class AIControl(Controller):
     def __init__(self, client):
         super().__init__(client)
         self.build_behavior_tree()
+        self.__bt_update_delay = 0.5
+        self.__times = random.uniform(0, self.__bt_update_delay)
 
     def update(self):
         if self.client.direction.x > 0:
@@ -23,8 +26,11 @@ class AIControl(Controller):
         if self.client.current_state == self.client.fall_state or self.client.current_state == self.client.tackle_state:
             self.client.release()
             return
-        
-        self.bt.run()
+
+        self.__times += game_framework.dt
+        if self.__times >= self.__bt_update_delay:
+            self.__times = 0
+            self.bt.run()
 
     def handle_event(self, event):
         pass
@@ -99,7 +105,10 @@ class AIControl(Controller):
     
     ######################### defence #########################
     def enemy_team_has_ball(self):
-        if play_scene.ball.owner is None or play_scene.ball.owner.team == self.client.team:
+        if play_scene.ball.owner is None:
+            return BehaviorTree.FAIL
+        
+        if play_scene.ball.owner.team == self.client.team:
             return BehaviorTree.FAIL
         else:
             return BehaviorTree.SUCCESS
