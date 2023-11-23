@@ -313,6 +313,7 @@ class FallState(State):
         self._clip_height = 120
 
     def enter(self, event=None):
+        self.client.drop_ball()
         if self.client.fall_to.x > 0:
             self.client.flip = False
         elif self.client.fall_to.x < 0:

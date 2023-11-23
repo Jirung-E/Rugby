@@ -15,19 +15,15 @@ class AIControl(Controller):
         self.build_behavior_tree()
 
     def update(self):
-        if self.client.direction.x == 0 and self.client.direction.y == 0:
-            self.client.current_state.idle()
-        else:
-            # self.client.current_state.run()
-            if self.client.direction.x > 0:
-                self.client.flip = False
-            elif self.client.direction.x < 0:
-                self.client.flip = True
-        if self.client.current_state == self.client.tackle_state:
+        if self.client.direction.x > 0:
+            self.client.flip = False
+        elif self.client.direction.x < 0:
+            self.client.flip = True
+
+        if self.client.current_state == self.client.fall_state or self.client.current_state == self.client.tackle_state:
+            self.client.release()
             return
         
-        self.client.direction.x = 0
-        self.client.direction.y = 0
         self.bt.run()
 
     def handle_event(self, event):
@@ -71,19 +67,12 @@ class AIControl(Controller):
             self.client.throw_half_power(0, 0)
             return BehaviorTree.SUCCESS
 
-        if self.client.stemina > 50:
-            self.client.direction.x = -(self.client.team * 2 - 3)
-            self.client.direction.y = 0
-            self.client.current_state.run()
-            return BehaviorTree.RUNNING
-            # self.client.current_state.dash()
-        # elif self.client.stemina > 0:
-        #     self.client.current_state.run()
-        else:
-            self.client.throw_half_power(0, 0)
-            return BehaviorTree.SUCCESS     # 사실은 FAIL이지만, FAIL이면 다음 행동으로 넘어가기 때문에 SUCCESS로 한다.
+        self.client.direction.x = -(self.client.team * 2 - 3)
+        self.client.direction.y = 0
+        self.client.current_state.run()
+        return BehaviorTree.RUNNING
         
-    def build_has_ball_behavior_tree(self):
+    def build_run_to_goal_behavior_tree(self):
         return Sequence("run to goal", 
                         Condition("has ball", self.has_ball), 
                         Action("run to goal", self.run_to_goal)
@@ -176,6 +165,8 @@ class AIControl(Controller):
     
     ######################### idle #########################
     def idle(self):
+        self.client.direction.x = 0
+        self.client.direction.y = 0
         self.client.current_state.idle()
         return BehaviorTree.SUCCESS
 
@@ -183,7 +174,7 @@ class AIControl(Controller):
     def build_behavior_tree(self):
         self.bt = BehaviorTree(
             Selector("AI Control",
-                self.build_has_ball_behavior_tree(),
+                self.build_run_to_goal_behavior_tree(),
                 self.build_release_or_defence_behavior_tree(),
                 self.build_ball_is_free_behavior_tree(),
                 Action("idle", self.idle)

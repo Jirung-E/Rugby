@@ -168,8 +168,9 @@ class Player:
         if self.ball is None:
             return
         
-        self.ball.velocity.x = self.direction.x * self.direction.x
-        self.ball.velocity.y = self.direction.y * self.direction.y
+        self.ball.velocity.x = self.direction.x * self.run_speed.x
+        self.ball.velocity.y = self.direction.y * self.run_speed.y
+        self.ball.velocity_z = 4
         self.ball.owner = None
         self.ball = None
 
