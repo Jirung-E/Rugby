@@ -96,13 +96,20 @@ class AIControl(Controller):
         else:
             return BehaviorTree.FAIL
         
+    def opponent_does_not_have_ball(self):
+        if self.client.grabbed_opponent.ball is None:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        
     def release_grabbed_opponent(self):
         self.client.release()
         return BehaviorTree.SUCCESS
     
     def build_release_behavior_tree(self):
-        return Sequence("release", 
-                        Condition("if grab", self.if_grab), 
+        return Sequence("release",
+                        Condition("if grab", self.if_grab),
+                        Condition("opponent does not have ball", self.opponent_does_not_have_ball), 
                         Action("release grabbed opponent", self.release_grabbed_opponent)
                         )
     
@@ -138,21 +145,11 @@ class AIControl(Controller):
                         )
     
     ######################### release or defence #########################
-    def opponent_does_not_have_ball(self):
-        if self.client.grabbed_opponent is not None:
-            if self.client.grabbed_opponent.ball is None:
-                return BehaviorTree.SUCCESS
-            else:
-                return BehaviorTree.FAIL
-        else:
-            return BehaviorTree.FAIL
+
         
     def build_release_or_defence_behavior_tree(self):
         return Selector("release or defence", 
-                        Sequence("release",
-                                 Condition("opponent does not have ball", self.opponent_does_not_have_ball), 
-                                 Action("release grabbed opponent", self.release_grabbed_opponent)
-                                 ),
+                        self.build_release_behavior_tree(),
                         self.build_defence_behavior_tree()
                         )
         
