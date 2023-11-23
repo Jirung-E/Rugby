@@ -4,4 +4,5 @@ from Game.GameObject.controllable import Controllable
 from Game.GameObject.field import Field
 from Game.GameObject.ball import Ball
 from Game.GameObject.shadow import Shadow
+from Game.GameObject.steminaBar import SteminaBar
 from Game.GameObject.goalZone import GoalZone

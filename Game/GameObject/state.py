@@ -145,7 +145,7 @@ class RunState(State):
             if self.client.stemina <= 0:
                 self.client.stemina = 0
                 return
-            self.client.stemina -= 2
+            self.client.stemina -= 5 * game_framework.dt
 
         self.client.position += speed * game_framework.dt
 
@@ -194,7 +194,7 @@ class DashState(RunState):
             self.client.stemina = 0
             self.run()
             return
-        self.client.stemina -= 2
+        self.client.stemina -= 10 * game_framework.dt
         
         speed = Vector(self.client.run_speed.x * self.client.direction.x, 
                        self.client.run_speed.y * self.client.direction.y) * 1.5

@@ -8,6 +8,7 @@ import Game.play_scene as play_scene
 from Math import *
 
 from pico2d import Image, draw_rectangle, clamp
+from pico2d import *
 import math
 import random
 import time
@@ -19,9 +20,9 @@ class Player:
         self.position = Point(0, 0)
         self.direction = Vector(0, 0)
         self.run_speed = Vector(5, 3)/2
-        self.stemina_max = 400
+        self.stemina_max = 100
         self.stemina = self.stemina_max
-        self.stemina_regen = 1  # per second
+        self.stemina_regen = 5  # per second
         self.dash = False
 
         self.state = None
@@ -56,17 +57,19 @@ class Player:
         if self.grabbed_opponent is not None:
             # print(self.grabbed_opponent.stemina)
             self.position = self.grabbed_opponent.position + -self.grabbed_offset
-            self.stemina -= 2
-            if self.stemina <= 0:
-                self.stemina = 0
-                # self.release()
+            self.stemina -= 5 * game_framework.dt
                 
-        self.stemina += 1
+        self.stemina += self.stemina_regen * game_framework.dt
         if self.stemina >= self.stemina_max:
             self.stemina = self.stemina_max
 
         self.controller.update()
         self.current_state.update()
+
+        if self.stemina <= 0:
+            self.stemina = 0
+            self.release()
+            self.drop_ball()
 
         w = play_scene.field.width // 2
         h = play_scene.field.height // 2
@@ -117,6 +120,8 @@ class Player:
         y2 += play_scene.window_center.y
         draw_rectangle(x1, y1, 
                        x2, y2)
+        
+        play_scene.stemina_bar.draw(self.stemina, self.stemina_max, draw_position.x, draw_position.y - 70)
 
     def catch(self, ball):
         if self.ball is not None:
@@ -201,6 +206,11 @@ class Player:
         self.grabbed_offset = Point(0, 0)
 
     def tackle(self, x, y):
+        if self.current_state == self.tackle_state or self.current_state == self.fall_state:
+            return
+        if self.stemina < 50:
+            return
+        self.stemina -= 50
         to = Vector(x - self.position.x, y - self.position.y)
         if self.position.x < x:
             self.flip = False

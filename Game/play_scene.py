@@ -28,6 +28,7 @@ def init():
     global ball_shadow
     global team
     global player
+    global stemina_bar
     global goal_zone
 
     field = Field()
@@ -48,7 +49,7 @@ def init():
     left_end = -field.width / 2
     bottom_end = -field.height / 2
     dist = field.height / 12
-    member = 1
+    member = 3
     for t in range(2):
         team[t] = [Player() for _ in range(member)]
         for i in range(member):
@@ -72,6 +73,8 @@ def init():
     # player.position = Point(0, 0)
     player.controller = Controllable(player)
     # world.collision_pairs["ball:player"][1].remove(player)
+
+    stemina_bar = SteminaBar()
 
     # goal_zone = [GoalZone(), GoalZone()]
     # goal_zone[0].position = Point(left_end, 0)
