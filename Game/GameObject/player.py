@@ -164,6 +164,15 @@ class Player:
         self.ball.owner = None
         self.ball = None
 
+    def drop_ball(self):
+        if self.ball is None:
+            return
+        
+        self.ball.velocity.x = self.direction.x * self.direction.x
+        self.ball.velocity.y = self.direction.y * self.direction.y
+        self.ball.owner = None
+        self.ball = None
+
     def grab(self, other):
         if self.grabbed_opponent is not None:
             return
