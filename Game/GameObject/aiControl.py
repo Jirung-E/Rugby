@@ -70,7 +70,10 @@ class AIControl(Controller):
 
         self.client.direction.x = -(self.client.team * 2 - 3)
         self.client.direction.y = 0
-        self.client.current_state.run()
+        if self.client.stemina < 50:
+            self.client.current_state.run()
+        else:
+            self.client.current_state.dash()
         return BehaviorTree.RUNNING
         
     def build_run_to_goal_behavior_tree(self):
@@ -116,7 +119,7 @@ class AIControl(Controller):
     def tackle_enemy(self):
         if self.client.stemina < 50:
             return BehaviorTree.FAIL
-        if Point.distance2(self.client.position, play_scene.ball.owner.position) < 3**2:
+        if Point.distance2(self.client.position, play_scene.ball.owner.position) < 2**2:
             self.client.tackle(play_scene.ball.owner.position.x, play_scene.ball.owner.position.y)
             return BehaviorTree.RUNNING     # 이부분이 SUCCESS면 이 이후 동작이 멈춘다. 이유는 모름
         else:
@@ -127,7 +130,10 @@ class AIControl(Controller):
         self.client.direction.x = target.x - self.client.position.x
         self.client.direction.y = target.y - self.client.position.y
         self.client.direction.normalize()
-        self.client.current_state.run()
+        if self.client.stemina < 50:
+            self.client.current_state.run()
+        else:
+            self.client.current_state.dash()
         return BehaviorTree.RUNNING
     
     def build_defence_behavior_tree(self):
@@ -160,7 +166,10 @@ class AIControl(Controller):
         self.client.direction.x = target.x - self.client.position.x
         self.client.direction.y = target.y - self.client.position.y
         self.client.direction.normalize()
-        self.client.current_state.run()
+        if self.client.stemina < 50:
+            self.client.current_state.run()
+        else:
+            self.client.current_state.dash()
         return BehaviorTree.RUNNING
 
     def build_ball_is_free_behavior_tree(self):
