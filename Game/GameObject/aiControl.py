@@ -31,24 +31,19 @@ class AIControl(Controller):
 
     def run_to_home(self):
         pass
-                    
+    
     def handle_collision(self, group, other):
         if group == "ball:player":
             self.client.catch(other)
             return
         
         if group == "player:player":
-            if self.client.current_state == self.client.tackle_state and self.client.current_state.frame > 5:
-                other.fall_to = self.client.tackle_to
-                other.current_state.fall()
+            if other.ball is None:
+                return 
+            if self.client.current_state == self.client.tackle_state or self.client.current_state == self.client.fall_state:
                 return
-            if other.current_state == other.tackle_state and other.current_state.frame > 5:
-                self.client.fall_to = other.tackle_to
-                self.client.current_state.fall()
-                return
-            if other.ball is not None:
-                self.client.grab(other)
-                return
+            self.client.grab(other)
+            return
             
     ################################ behavior tree ################################
 
@@ -58,7 +53,7 @@ class AIControl(Controller):
             return BehaviorTree.FAIL
         else:
             return BehaviorTree.SUCCESS
-        
+    
     def run_to_goal(self):
         if self.client.team == 1 and self.client.position.x > play_scene.field.width/2-2:
             self.client.throw_half_power(0, 0)

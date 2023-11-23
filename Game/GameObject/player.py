@@ -125,8 +125,9 @@ class Player:
             return
         if ball.height > 0.8:
             return
-        # if Point.distance2(self.position, ball.position) < 30**2:
-            # print(Point.distance(self.position, ball.position))
+        if self.current_state == self.tackle_state or self.current_state == self.fall_state:
+            return
+        
         print('catch')
         ball.owner = self
         self.ball = ball
@@ -182,11 +183,14 @@ class Player:
     def grab(self, other):
         if self.grabbed_opponent is not None:
             return
-        
-        if other.team != self.team:
-            self.grabbed_opponent = other
-            other.attackers.append(self)
-            self.grabbed_offset = other.position + -self.position
+        if self.current_state == self.tackle_state or self.current_state == self.fall_state:
+            return
+        if other.team == self.team:
+            return
+
+        self.grabbed_opponent = other
+        other.attackers.append(self)
+        self.grabbed_offset = other.position + -self.position
 
     def release(self):
         if self.grabbed_opponent is None:
@@ -209,5 +213,10 @@ class Player:
         return (self.position.x-0.25, self.position.y, self.position.x+0.25, self.position.y+0.5)
     
     def handle_collision(self, group, other):
+        if group == "player:player":
+            if self.current_state == self.tackle_state and self.current_state.frame > 5:
+                other.fall_to = self.tackle_to
+                other.current_state.fall()
+                return
         self.controller.handle_collision(group, other)
                 
