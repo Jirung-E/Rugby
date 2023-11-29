@@ -11,7 +11,6 @@ class GoalZone:
         self.position = Point(0, 0)
         self.width = 2
         self.height = play_scene.field.height/2
-        self.score = 0
         self.team = team
 
     def update(self):
@@ -42,7 +41,7 @@ class GoalZone:
             if other.owner is not None:
                 if other.owner.team == self.team:
                     return
-                self.score += 1
+                play_scene.score_board[self.team & 1].score += 1
                 throw_y = random.uniform(play_scene.field.height/2, -play_scene.field.height/2)
                 if other.owner.team == 1:
                     other.owner.throw_half_power(0, throw_y)

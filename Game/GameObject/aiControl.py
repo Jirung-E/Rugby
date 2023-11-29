@@ -14,7 +14,7 @@ class AIControl(Controller):
     def __init__(self, client):
         super().__init__(client)
         self.build_behavior_tree()
-        self.__bt_update_delay = 0.5
+        self.__bt_update_delay = 0.4
         self.__times = random.uniform(0, self.__bt_update_delay)
 
     def update(self):
@@ -109,7 +109,7 @@ class AIControl(Controller):
                         nearest = p
                         nearest_distance = dist
         if nearest is not None:
-            self.client.throw_half_power(nearest.position.x, nearest.position.y)
+            self.client.throw(nearest.position.x, nearest.position.y)
             return BehaviorTree.SUCCESS
         return BehaviorTree.FAIL
     

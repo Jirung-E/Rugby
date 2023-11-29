@@ -30,6 +30,7 @@ def init():
     global player
     global stemina_bar
     global goal_zone
+    global score_board
 
     field = Field()
     world.add_object(field, world.BACKGROUND_LAYER)
@@ -46,6 +47,7 @@ def init():
     team_image = [ load_image('res/player1.png'), load_image('res/player2.png') ]
 
     team = {}
+    player_team = random.randrange(2)
     left_end = -field.width / 2
     bottom_end = -field.height / 2
     dist = field.height / 12
@@ -58,6 +60,10 @@ def init():
             team[t][i].position.y = bottom_end + dist * (i+1)
             team[t][i].y_fix = team[t][i].position.y
             team[t][i].controller = AIControl(team[t][i])
+            if t == player_team:
+                team[t][i].controller.__bt_update_delay = 0.5
+            else:
+                team[t][i].controller.__bt_update_delay = 0.2
             team[t][i].image = team_image[t]
             team[t][i].team = t+1
             world.add_collision_pair("ball:player", None, team[t][i])
@@ -69,13 +75,12 @@ def init():
     world.add_objects(team[1], world.OBJECT_LAYER)
 
     num = random.randrange(member)
-    t = random.randrange(2)
-    player = team[t][num]
-    # player.position = Point(0, 0)
+    player = team[player_team][num]
     player.controller = Controllable(player)
-    # world.collision_pairs["ball:player"][1].remove(player)
 
     stemina_bar = SteminaBar()
+    score_board = [ScoreBoard(1), ScoreBoard(2)]
+    world.add_objects(score_board, world.UI_LAYER)
 
     goal_zone = [GoalZone(1), GoalZone(2)]
     goal_zone[0].position = Point(left_end+1, 0)

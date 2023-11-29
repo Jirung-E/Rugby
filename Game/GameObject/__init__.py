@@ -6,3 +6,4 @@ from Game.GameObject.ball import Ball
 from Game.GameObject.shadow import Shadow
 from Game.GameObject.steminaBar import SteminaBar
 from Game.GameObject.goalZone import GoalZone
+from Game.GameObject.scoreBoard import ScoreBoard

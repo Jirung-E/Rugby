@@ -2,6 +2,7 @@ objects = [[] for _ in range(4)]
 BACKGROUND_LAYER = 0
 SHADOW_LAYER = 1
 OBJECT_LAYER = 2
+UI_LAYER = 3
 
 collision_pairs = {}
 
