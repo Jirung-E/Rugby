@@ -36,7 +36,6 @@ class GoalZone:
                 self.position.x + self.width/2, self.position.y + self.height)
     
     def handle_collision(self, group, other):
-        print("hello")
         if group == "ball:goal_zone":
             if other.owner is not None:
                 if other.owner.team == self.team:

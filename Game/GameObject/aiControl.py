@@ -74,7 +74,7 @@ class AIControl(Controller):
 
         self.client.direction.x = -(self.client.team * 2 - 3)
         self.client.direction.y = 0
-        if self.client.stemina < 50:
+        if self.client.stemina < 45:
             self.client.current_state.run()
         else:
             self.client.current_state.dash()
@@ -249,7 +249,7 @@ class AIControl(Controller):
         else:
             self.client.direction.y = self.client.y_fix - self.client.position.y
         self.client.direction.normalize()
-        if self.client.stemina < 50:
+        if self.client.stemina < 45:
             self.client.current_state.run()
         else:
             self.client.current_state.dash()
@@ -281,7 +281,7 @@ class AIControl(Controller):
             self.client.direction.y = target.y - self.client.position.y
         self.client.direction.normalize()
 
-        if self.client.stemina < 50:
+        if self.client.stemina < 45:
             self.client.current_state.run()
         else:
             self.client.current_state.dash()
