@@ -68,10 +68,8 @@ class AIControl(Controller):
 
     def run_to_goal(self):
         if self.client.team == 1 and self.client.position.x > play_scene.field.width/2-2:
-            self.client.throw_half_power(0, 0)
             return BehaviorTree.SUCCESS
         elif self.client.team == 2 and self.client.position.x < -play_scene.field.width/2+2:
-            self.client.throw_half_power(0, 0)
             return BehaviorTree.SUCCESS
 
         self.client.direction.x = -(self.client.team * 2 - 3)
@@ -246,10 +244,10 @@ class AIControl(Controller):
     def chase_enemy(self):
         target = play_scene.ball.owner.position
         self.client.direction.x = target.x - self.client.position.x
-        if abs(self.client.y_fix - target.y) > 2:
-            self.client.direction.y = 0
-        else:
+        if Point.distance2(self.client.position, play_scene.ball.owner.position) < 1.5**2:
             self.client.direction.y = target.y - self.client.position.y
+        else:
+            self.client.direction.y = self.client.y_fix - self.client.position.y
         self.client.direction.normalize()
         if self.client.stemina < 50:
             self.client.current_state.run()

@@ -77,10 +77,12 @@ def init():
 
     stemina_bar = SteminaBar()
 
-    # goal_zone = [GoalZone(), GoalZone()]
-    # goal_zone[0].position = Point(left_end, 0)
-    # goal_zone[1].position = Point(field.width/2, 0)
-    # world.add_objects(goal_zone, world.BACKGROUND_LAYER)
+    goal_zone = [GoalZone(1), GoalZone(2)]
+    goal_zone[0].position = Point(left_end+1, 0)
+    world.add_collision_pair("ball:goal_zone", ball, goal_zone[0])
+    goal_zone[1].position = Point(field.width/2-1, 0)
+    world.add_collision_pair("ball:goal_zone", None, goal_zone[1])
+    world.add_objects(goal_zone, world.BACKGROUND_LAYER)
 
 
 def finish():

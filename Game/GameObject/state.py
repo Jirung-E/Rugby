@@ -136,8 +136,7 @@ class RunState(State):
 
     def _update(self, speed):
         if self.client.attackers:
-            s = Vector(self.client.run_speed.x, self.client.run_speed.y)
-            speed = s * random.uniform(-0.5, 0.5)
+            speed = speed * random.uniform(-0.5, 0.5)
             self.client.stemina -= 10*len(self.client.attackers) * game_framework.dt
             if self.client.stemina <= 0:
                 self.client.stemina = 0

@@ -20,7 +20,7 @@ class Player:
         self.position = Point(0, 0)
         self.y_fix = 0
         self.direction = Vector(0, 0)
-        self.run_speed = Vector(5, 3)/2
+        self.run_speed = Vector(5, 4)/2
         self.stemina_max = 100
         self.stemina = self.stemina_max
         self.stemina_regen = 5  # per second
