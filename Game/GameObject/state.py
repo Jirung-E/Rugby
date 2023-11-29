@@ -135,17 +135,15 @@ class RunState(State):
         self._update(speed)
 
     def _update(self, speed):
-        d = self.client.team * 2 - 3    # 끌고갈 방향
-        for a in self.client.attackers:
-            other_speed = Vector(a.run_speed.x * -d, 
-                                 a.run_speed.y * self.client.direction.y)
-            speed = speed - other_speed * random.uniform(0.5, 1.5)
-            if speed.length() > self.client.run_speed.length():
-                speed = speed.unit() * self.client.run_speed.length()
+        if self.client.attackers:
+            s = Vector(self.client.run_speed.x, self.client.run_speed.y)
+            speed = s * random.uniform(-0.5, 0.5)
+            self.client.stemina -= 10*len(self.client.attackers) * game_framework.dt
             if self.client.stemina <= 0:
                 self.client.stemina = 0
+                self.client.fall_to = speed.unit()
+                self.fall()
                 return
-            self.client.stemina -= 5 * game_framework.dt
 
         self.client.position += speed * game_framework.dt
 

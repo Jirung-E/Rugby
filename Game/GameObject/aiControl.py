@@ -60,6 +60,12 @@ class AIControl(Controller):
         else:
             return BehaviorTree.SUCCESS
     
+    def not_grabbed(self):
+        if self.client.attackers:
+            return BehaviorTree.FAIL
+        else:
+            return BehaviorTree.SUCCESS
+
     def run_to_goal(self):
         if self.client.team == 1 and self.client.position.x > play_scene.field.width/2-2:
             self.client.throw_half_power(0, 0)
@@ -75,13 +81,125 @@ class AIControl(Controller):
         else:
             self.client.current_state.dash()
         return BehaviorTree.RUNNING
+    
+    def tackle_forwards(self):
+        if self.client.stemina < 50:
+            return BehaviorTree.FAIL
+        self.client.tackle(play_scene.ball.owner.position.x + (3 - self.client.team * 2), self.client.position.y)
+        return BehaviorTree.SUCCESS
+    
+    def pass_to_team(self):
+        nearest = None
+        nearest_distance = 1000000
+        for p in play_scene.team[self.client.team-1]:
+            if p is self.client:
+                continue
+            if self.client.team == 1 and p.position.x > self.client.position.x:
+                if nearest is None:
+                    nearest = p
+                else:
+                    dist = Point.distance2(self.client.position, p.position)
+                    if dist < nearest_distance:
+                        nearest = p
+                        nearest_distance = dist
+            elif self.client.team == 2 and p.position.x < self.client.position.x:
+                if nearest is None:
+                    nearest = p
+                else:
+                    dist = Point.distance2(self.client.position, p.position)
+                    if dist < nearest_distance:
+                        nearest = p
+                        nearest_distance = dist
+        if nearest is not None:
+            self.client.throw_half_power(nearest.position.x, nearest.position.y)
+            return BehaviorTree.SUCCESS
+        return BehaviorTree.FAIL
+    
+    def hold(self):
+        return BehaviorTree.SUCCESS
         
-    def build_run_to_goal_behavior_tree(self):
-        return Sequence("run to goal", 
+    def build_try_to_goal_behavior_tree(self):
+        return Sequence("try to goal", 
                         Condition("has ball", self.has_ball), 
-                        Action("run to goal", self.run_to_goal)
+                        Selector("run or tackle or pass or hold", 
+                                 Sequence("try to run", 
+                                          Condition("not grabbed", self.not_grabbed),
+                                          Action("run to goal", self.run_to_goal)
+                                          ),
+                                 Sequence("try to tackle",
+                                          Action("tackle", self.tackle_forwards)
+                                          ),
+                                 Sequence("try to pass", 
+                                          Action("pass", self.pass_to_team)
+                                          ),
+                                 Action("hold", self.hold)
+                                 )
                         )
     
+    ######################### team has ball #########################
+    def team_has_ball(self):        # 팀원이 공을 잡고있다면
+        if play_scene.ball.owner is None:
+            return BehaviorTree.FAIL
+        
+        if play_scene.ball.owner.team == self.client.team:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        
+    def is_owner_was_grabbed(self): # 공을 잡은 플레이어가 상대팀에게 잡혔다면
+        if play_scene.ball.owner.attackers:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        
+    def save_owner(self):           # 공을 잡은 플레이어를 구하러 간다
+        if self.client.stemina < 50 or abs(self.client.y_fix - play_scene.ball.owner.position.y) > 2:
+            return BehaviorTree.FAIL
+        
+        target = play_scene.ball.owner.position
+        if Point.distance2(self.client.position, target) < 2**2:
+            self.client.tackle(target.x, target.y)
+            return BehaviorTree.SUCCESS
+        
+        # self.client.direction.x = target.x - self.client.position.x
+        # self.client.direction.y = target.y - self.client.position.y
+        # self.client.direction.normalize()
+        if self.client.stemina < 60:
+            self.client.current_state.run()
+        else:
+            self.client.current_state.dash()
+        return BehaviorTree.RUNNING
+    
+    def run_parallel(self):
+        x_distance = abs(self.client.position.x - play_scene.ball.owner.position.x)
+        if self.client.team == 1:
+            if self.client.position.x < play_scene.ball.owner.position.x and x_distance < 1:
+                return BehaviorTree.SUCCESS 
+            else:
+                self.client.direction.x = play_scene.ball.owner.position.x-1 - self.client.position.x
+        elif self.client.team == 2:
+            if self.client.position.x > play_scene.ball.owner.position.x and x_distance < 1:
+                return BehaviorTree.SUCCESS
+            else:
+                self.client.direction.x = play_scene.ball.owner.position.x+1 - self.client.position.x
+            
+        self.client.direction.y = self.client.y_fix - self.client.position.y
+        self.client.direction.normalize()
+        self.client.current_state.run()
+        return BehaviorTree.RUNNING
+    
+    def build_support_team_behavior_tree(self):
+        return Sequence("support team", 
+                        Condition("team has ball", self.team_has_ball), 
+                        Selector("try to support", 
+                                 Sequence("try to save", 
+                                          Condition("is owner was grabbed", self.is_owner_was_grabbed), 
+                                          Action("save owner", self.save_owner)
+                                          ),
+                                 Action("run parallel", self.run_parallel)
+                                 )
+                        )
+
     ######################### release #########################
     def if_grab(self):
         if self.client.grabbed_opponent is not None:
@@ -128,7 +246,10 @@ class AIControl(Controller):
     def chase_enemy(self):
         target = play_scene.ball.owner.position
         self.client.direction.x = target.x - self.client.position.x
-        self.client.direction.y = target.y - self.client.position.y
+        if abs(self.client.y_fix - target.y) > 2:
+            self.client.direction.y = 0
+        else:
+            self.client.direction.y = target.y - self.client.position.y
         self.client.direction.normalize()
         if self.client.stemina < 50:
             self.client.current_state.run()
@@ -144,15 +265,6 @@ class AIControl(Controller):
                                  Action("chase enemy", self.chase_enemy)
                                  )
                         )
-    
-    ######################### release or defence #########################
-
-        
-    def build_release_or_defence_behavior_tree(self):
-        return Selector("release or defence", 
-                        self.build_release_behavior_tree(),
-                        self.build_defence_behavior_tree()
-                        )
         
     ######################### ball is free #########################
     def ball_is_free(self):
@@ -163,13 +275,19 @@ class AIControl(Controller):
         
     def run_to_ball(self):
         target = play_scene.ball.position
+        
         self.client.direction.x = target.x - self.client.position.x
-        self.client.direction.y = target.y - self.client.position.y
+        if abs(self.client.y_fix - target.y) > 2:
+            self.client.direction.y = 0
+        else:
+            self.client.direction.y = target.y - self.client.position.y
         self.client.direction.normalize()
+
         if self.client.stemina < 50:
             self.client.current_state.run()
         else:
             self.client.current_state.dash()
+
         return BehaviorTree.RUNNING
 
     def build_ball_is_free_behavior_tree(self):
@@ -177,7 +295,7 @@ class AIControl(Controller):
                         Condition("ball is free", self.ball_is_free), 
                         Action("run to ball", self.run_to_ball)
                         )
-    
+
     ######################### idle #########################
     def idle(self):
         self.client.direction.x = 0
@@ -189,8 +307,10 @@ class AIControl(Controller):
     def build_behavior_tree(self):
         self.bt = BehaviorTree(
             Selector("AI Control",
-                self.build_run_to_goal_behavior_tree(),
-                self.build_release_or_defence_behavior_tree(),
+                self.build_try_to_goal_behavior_tree(),
+                self.build_support_team_behavior_tree(),
+                self.build_release_behavior_tree(),
+                self.build_defence_behavior_tree(),
                 self.build_ball_is_free_behavior_tree(),
                 Action("idle", self.idle)
             )

@@ -49,13 +49,14 @@ def init():
     left_end = -field.width / 2
     bottom_end = -field.height / 2
     dist = field.height / 12
-    member = 3
+    member = 11
     for t in range(2):
         team[t] = [Player() for _ in range(member)]
         for i in range(member):
             x = left_end+3 + t * (field.width-6)
             team[t][i].position.x = x
             team[t][i].position.y = bottom_end + dist * (i+1)
+            team[t][i].y_fix = team[t][i].position.y
             team[t][i].controller = AIControl(team[t][i])
             team[t][i].image = team_image[t]
             team[t][i].team = t+1

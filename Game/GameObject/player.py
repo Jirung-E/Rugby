@@ -18,6 +18,7 @@ from typing import List
 class Player:
     def __init__(self):
         self.position = Point(0, 0)
+        self.y_fix = 0
         self.direction = Vector(0, 0)
         self.run_speed = Vector(5, 3)/2
         self.stemina_max = 100
@@ -70,6 +71,7 @@ class Player:
             self.stemina = 0
             self.release()
             self.drop_ball()
+            self.current_state.fall()
 
         w = play_scene.field.width // 2
         h = play_scene.field.height // 2
