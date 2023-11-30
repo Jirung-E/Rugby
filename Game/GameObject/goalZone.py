@@ -17,6 +17,7 @@ class GoalZone:
         pass
 
     def draw(self):
+        return
         draw_position = -play_scene.player.position * game_framework.PIXEL_PER_METER + play_scene.window_center
         
         x1, y1, x2, y2 = self.get_bb()

@@ -55,15 +55,15 @@ class Player:
         self.__prev_draw_time = time.time()
 
     def update(self):
-        if self.grabbed_opponent is not None:
-            # print(self.grabbed_opponent.stemina)
-            self.position = self.grabbed_opponent.position + -self.grabbed_offset
-            self.stemina -= 5 * game_framework.dt
-                
         self.stemina += self.stemina_regen * game_framework.dt
         if self.stemina >= self.stemina_max:
             self.stemina = self.stemina_max
 
+        if self.grabbed_opponent is not None:
+            # print(self.grabbed_opponent.stemina)
+            self.position = self.grabbed_opponent.position + -self.grabbed_offset
+            self.stemina -= 10 * game_framework.dt
+        
         if self.attackers:
             self.stemina -= 10*len(self.attackers) * game_framework.dt
             
@@ -110,21 +110,21 @@ class Player:
             self.current_state.nextFrame()
             self.__prev_draw_time = time.time()
 
-        x1, y1, x2, y2 = self.get_bb()
-        x1 += -play_scene.player.position.x
-        x1 *= game_framework.PIXEL_PER_METER
-        x1 += play_scene.window_center.x
-        y1 += -play_scene.player.position.y 
-        y1 *= game_framework.PIXEL_PER_METER
-        y1 += play_scene.window_center.y
-        x2 += -play_scene.player.position.x 
-        x2 *= game_framework.PIXEL_PER_METER
-        x2 += play_scene.window_center.x
-        y2 += -play_scene.player.position.y
-        y2 *= game_framework.PIXEL_PER_METER
-        y2 += play_scene.window_center.y
-        draw_rectangle(x1, y1, 
-                       x2, y2)
+        # x1, y1, x2, y2 = self.get_bb()
+        # x1 += -play_scene.player.position.x
+        # x1 *= game_framework.PIXEL_PER_METER
+        # x1 += play_scene.window_center.x
+        # y1 += -play_scene.player.position.y 
+        # y1 *= game_framework.PIXEL_PER_METER
+        # y1 += play_scene.window_center.y
+        # x2 += -play_scene.player.position.x 
+        # x2 *= game_framework.PIXEL_PER_METER
+        # x2 += play_scene.window_center.x
+        # y2 += -play_scene.player.position.y
+        # y2 *= game_framework.PIXEL_PER_METER
+        # y2 += play_scene.window_center.y
+        # draw_rectangle(x1, y1, 
+        #                x2, y2)
         
         play_scene.stemina_bar.draw(self.stemina, self.stemina_max, draw_position.x, draw_position.y - 70)
 

@@ -82,20 +82,20 @@ class Ball:
         draw_position += play_scene.window_center + Point(0, 30)
         self.image.composite_draw(self.rotate, '', draw_position.x, draw_position.y)
 
-        x1, y1, x2, y2 = self.get_bb()
-        x1 += -play_scene.player.position.x
-        x1 *= game_framework.PIXEL_PER_METER
-        x1 += play_scene.window_center.x
-        y1 += -play_scene.player.position.y
-        y1 *= game_framework.PIXEL_PER_METER
-        y1 += play_scene.window_center.y
-        x2 += -play_scene.player.position.x
-        x2 *= game_framework.PIXEL_PER_METER
-        x2 += play_scene.window_center.x
-        y2 += -play_scene.player.position.y
-        y2 *= game_framework.PIXEL_PER_METER
-        y2 += play_scene.window_center.y
-        draw_rectangle(x1, y1, x2, y2)
+        # x1, y1, x2, y2 = self.get_bb()
+        # x1 += -play_scene.player.position.x
+        # x1 *= game_framework.PIXEL_PER_METER
+        # x1 += play_scene.window_center.x
+        # y1 += -play_scene.player.position.y
+        # y1 *= game_framework.PIXEL_PER_METER
+        # y1 += play_scene.window_center.y
+        # x2 += -play_scene.player.position.x
+        # x2 *= game_framework.PIXEL_PER_METER
+        # x2 += play_scene.window_center.x
+        # y2 += -play_scene.player.position.y
+        # y2 *= game_framework.PIXEL_PER_METER
+        # y2 += play_scene.window_center.y
+        # draw_rectangle(x1, y1, x2, y2)
 
     def get_bb(self):
         return (self.position.x - 0.5, self.position.y - 0.5, self.position.x + 0.5, self.position.y + 0.5)
