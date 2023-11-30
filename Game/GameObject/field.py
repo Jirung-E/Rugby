@@ -8,8 +8,8 @@ from Math import Point
 class Field:
     def __init__(self):
         self.image = load_image('res/field.jpg')
-        self.width = 100 / 4
-        self.height = 50 / 4
+        self.width = 100 / 3.6
+        self.height = 50 / 3.6
 
     def draw(self):
         draw_position = -play_scene.player.position * game_framework.PIXEL_PER_METER + play_scene.window_center
