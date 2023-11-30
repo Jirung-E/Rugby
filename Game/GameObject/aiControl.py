@@ -248,7 +248,7 @@ class AIControl(Controller):
     def chase_enemy(self):
         target = play_scene.ball.owner.position
         self.client.direction.x = target.x - self.client.position.x
-        if Point.distance2(self.client.position, play_scene.ball.owner.position) < 1.5**2 or abs(self.client.y_fix - self.client.position.y) < 1.5:
+        if Point.distance2(self.client.position, play_scene.ball.owner.position) < 2**2 and abs(self.client.y_fix - self.client.position.y) < 1.5:
             self.client.direction.y = target.y - self.client.position.y
             self.client.direction.normalize()
             if self.client.stemina < 45:
