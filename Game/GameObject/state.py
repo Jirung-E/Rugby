@@ -137,9 +137,7 @@ class RunState(State):
     def _update(self, speed):
         if self.client.attackers:
             speed = speed * random.uniform(-0.5, 0.5)
-            self.client.stemina -= 10*len(self.client.attackers) * game_framework.dt
             if self.client.stemina <= 0:
-                self.client.stemina = 0
                 self.client.fall_to = speed.unit()
                 self.fall()
                 return

@@ -18,6 +18,9 @@ class AIControl(Controller):
         self.__times = random.uniform(0, self.__bt_update_delay)
 
     def update(self):
+        if self.client.ball is not None:
+            self.client.direction.x = 3 - self.client.team * 2
+
         if self.client.direction.x > 0:
             self.client.flip = False
         elif self.client.direction.x < 0:
@@ -87,29 +90,26 @@ class AIControl(Controller):
         return BehaviorTree.SUCCESS
     
     def pass_to_team(self):
-        nearest = None
-        nearest_distance = 1000000
+        if self.client.stemina > 20:
+            return BehaviorTree.FAIL
+        if self.client.team == 1 and self.client.position.x < -play_scene.field.width/4:
+            return BehaviorTree.FAIL
+        elif self.client.team == 2 and self.client.position.x > play_scene.field.width/4:
+            return BehaviorTree.FAIL
+
+        passable = []
         for p in play_scene.team[self.client.team-1]:
             if p is self.client:
                 continue
-            if self.client.team == 1 and p.position.x > self.client.position.x:
-                if nearest is None:
-                    nearest = p
-                else:
-                    dist = Point.distance2(self.client.position, p.position)
-                    if dist < nearest_distance:
-                        nearest = p
-                        nearest_distance = dist
-            elif self.client.team == 2 and p.position.x < self.client.position.x:
-                if nearest is None:
-                    nearest = p
-                else:
-                    dist = Point.distance2(self.client.position, p.position)
-                    if dist < nearest_distance:
-                        nearest = p
-                        nearest_distance = dist
-        if nearest is not None:
-            self.client.throw(nearest.position.x, nearest.position.y)
+            if p.stemina < 30:
+                continue
+            if self.client.team == 1 and p.position.x < self.client.position.x:
+                passable.append(p)
+            elif self.client.team == 2 and p.position.x > self.client.position.x:
+                passable.append(p)
+        if passable:
+            to = random.choice(passable)
+            self.client.throw_half_power(to.position.x, to.position.y)
             return BehaviorTree.SUCCESS
         return BehaviorTree.FAIL
     
@@ -233,10 +233,14 @@ class AIControl(Controller):
             return BehaviorTree.SUCCESS
     
     def tackle_enemy(self):
+        if self.client.team == 1 and self.client.position.x < play_scene.ball.owner.position.x:
+            return BehaviorTree.FAIL
+        elif self.client.team == 2 and self.client.position.x > play_scene.ball.owner.position.x:
+            return BehaviorTree.FAIL
         if self.client.stemina < 50:
             return BehaviorTree.FAIL
         if Point.distance2(self.client.position, play_scene.ball.owner.position) < 2**2:
-            self.client.tackle(play_scene.ball.owner.position.x, play_scene.ball.owner.position.y)
+            self.client.tackle(play_scene.ball.owner.position.x + self.client.team*2-3, play_scene.ball.owner.position.y)
             return BehaviorTree.RUNNING     # 이부분이 SUCCESS면 이 이후 동작이 멈춘다. 이유는 모름
         else:
             return BehaviorTree.FAIL
@@ -244,15 +248,21 @@ class AIControl(Controller):
     def chase_enemy(self):
         target = play_scene.ball.owner.position
         self.client.direction.x = target.x - self.client.position.x
-        if Point.distance2(self.client.position, play_scene.ball.owner.position) < 1.5**2:
+        if Point.distance2(self.client.position, play_scene.ball.owner.position) < 1.5**2 or abs(self.client.y_fix - self.client.position.y) < 1.5:
             self.client.direction.y = target.y - self.client.position.y
+            self.client.direction.normalize()
+            if self.client.stemina < 45:
+                self.client.current_state.run()
+            else:
+                self.client.current_state.dash()
         else:
             self.client.direction.y = self.client.y_fix - self.client.position.y
-        self.client.direction.normalize()
-        if self.client.stemina < 45:
-            self.client.current_state.run()
-        else:
-            self.client.current_state.dash()
+            self.client.direction.normalize()
+            if abs(self.client.position.x - target.x) < 2:
+                self.client.current_state.run()
+            else:
+                self.client.current_state.dash()
+
         return BehaviorTree.RUNNING
     
     def build_defence_behavior_tree(self):
@@ -275,10 +285,10 @@ class AIControl(Controller):
         target = play_scene.ball.position
         
         self.client.direction.x = target.x - self.client.position.x
-        if abs(self.client.y_fix - target.y) > 2:
-            self.client.direction.y = 0
-        else:
+        if Point.distance2(self.client.position, target) < 1.5**2:
             self.client.direction.y = target.y - self.client.position.y
+        else:
+            self.client.direction.y = self.client.y_fix - self.client.position.y
         self.client.direction.normalize()
 
         if self.client.stemina < 45:
@@ -306,9 +316,9 @@ class AIControl(Controller):
         self.bt = BehaviorTree(
             Selector("AI Control",
                 self.build_try_to_goal_behavior_tree(),
+                self.build_defence_behavior_tree(),
                 self.build_support_team_behavior_tree(),
                 self.build_release_behavior_tree(),
-                self.build_defence_behavior_tree(),
                 self.build_ball_is_free_behavior_tree(),
                 Action("idle", self.idle)
             )

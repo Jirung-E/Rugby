@@ -41,7 +41,7 @@ class Player:
         self.attackers: List[Player] = []       # 공격하는 상대방들 
 
         self.tackle_to = None
-        self.fall_to = None
+        self.fall_to = Point(0, 0)
 
         self.idle_state = IdleState(self)
         self.run_state = RunState(self)
@@ -64,9 +64,12 @@ class Player:
         if self.stemina >= self.stemina_max:
             self.stemina = self.stemina_max
 
+        if self.attackers:
+            self.stemina -= 10*len(self.attackers) * game_framework.dt
+            
         self.controller.update()
         self.current_state.update()
-
+            
         if self.stemina <= 0:
             self.stemina = 0
             self.release()
@@ -149,6 +152,12 @@ class Player:
         if self.ball is None:
             return
         self.throw_direction(Vector(x - self.position.x, y - self.position.y) * 0.5)
+
+    def throw_high(self, x, y):
+        if self.ball is None:
+            return
+        self.throw_direction(Vector(x - self.position.x, y - self.position.y) * 0.3)
+        play_scene.ball.velocity_z *= 3
 
     def throw(self, x, y):
         if self.ball is None:

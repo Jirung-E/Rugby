@@ -43,9 +43,9 @@ class GoalZone:
                 play_scene.score_board[self.team & 1].score += 1
                 throw_y = random.uniform(play_scene.field.height/2, -play_scene.field.height/2)
                 if other.owner.team == 1:
-                    other.owner.throw_half_power(0, throw_y)
+                    other.owner.throw_high(0, throw_y)
                 elif other.owner.team == 2:
-                    other.owner.throw_half_power(0, throw_y)
+                    other.owner.throw_high(0, throw_y)
                 return
             else:
                 if self.team == 1:
