@@ -63,7 +63,9 @@ def init():
             if t == player_team:
                 team[t][i].controller.__bt_update_delay = 0.5
             else:
-                team[t][i].controller.__bt_update_delay = 0.2
+                team[t][i].controller.__bt_update_delay = 0.3
+                team[t][i].stemina_regen = 7
+                team[t][i].run_speed *= 1.05
             team[t][i].image = team_image[t]
             team[t][i].team = t+1
             world.add_collision_pair("ball:player", None, team[t][i])
