@@ -15,7 +15,8 @@ def handle_events():
             game_framework.change_mode(play_scene)
 
 def init():
-    pass
+    global bg_image
+    bg_image = load_image('res/bg_image.png')
 
 def finish():
     pass
@@ -27,7 +28,8 @@ def update():
 
 def draw():
     clear_canvas()
-    
+    aspect = game_framework.height / bg_image.h
+    bg_image.draw(get_canvas_width()//2+50, get_canvas_height()//2, bg_image.w * aspect, game_framework.height)
     update_canvas()
 
 

@@ -1,6 +1,9 @@
 import time
 
 
+width = 1280
+height = 800
+
 PIXEL_PER_METER = (100.0 / 1.0)  # 100 pixel  ==  1 m
 
 

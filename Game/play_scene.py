@@ -4,12 +4,12 @@ from pico2d import *
 
 import Game.game_framework as game_framework
 import Game.world as world
+import Game.lobby_scene as lobby_scene
+import Game.result_scene as result_scene
 from Game.GameObject import *
 from Math import *
 
-width = 1200
-height = 800
-window_center = Point(width/2, height/2)
+window_center = Point(game_framework.width/2, game_framework.height/2)
 
 
 def handle_events():
@@ -18,7 +18,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            game_framework.quit()
+            game_framework.change_mode(lobby_scene)
         else:
             player.handle_event(event)
 
@@ -64,7 +64,7 @@ def init():
                 team[t][i].controller.__bt_update_delay = 0.5
             else:
                 team[t][i].controller.__bt_update_delay = 0.3
-                team[t][i].stemina_regen = 7
+                # team[t][i].stemina_regen = 7
                 team[t][i].run_speed *= 1.05
             team[t][i].image = team_image[t]
             team[t][i].team = t+1
