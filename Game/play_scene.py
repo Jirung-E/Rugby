@@ -32,6 +32,9 @@ def init():
     global goal_zone
     global score_board
 
+    world.clear()
+    world.collision_pairs.clear()
+
     field = Field()
     world.add_object(field, world.BACKGROUND_LAYER)
 
@@ -49,9 +52,9 @@ def init():
     team = {}
     player_team = random.randrange(2)
     left_end = -field.width / 2
-    bottom_end = -field.height / 2
-    dist = field.height / 12
+    bottom_end = -field.height / 2 + 1.5
     member = 11
+    dist = (field.height-3) / (member+1)
     for t in range(2):
         team[t] = [Player() for _ in range(member)]
         for i in range(member):
@@ -100,6 +103,8 @@ def finish():
 def update():
     world.update()
     world.handle_collisions()
+    if score_board[0].score >= 10 or score_board[1].score >= 10:
+        game_framework.change_mode(result_scene)
 
 
 def draw():
