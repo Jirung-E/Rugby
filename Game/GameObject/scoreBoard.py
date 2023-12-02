@@ -22,7 +22,7 @@ class ScoreBoard:       # 2자리까지 표현
         pass
 
     def draw(self):
-        print(self.score)
+        # print(self.score)
 
         digit10 = self.score // 10
         digit1 = self.score % 10

@@ -9,8 +9,6 @@ import Game.result_scene as result_scene
 from Game.GameObject import *
 from Math import *
 
-window_center = Point(game_framework.width/2, game_framework.height/2)
-
 
 def handle_events():
     events = get_events()
@@ -103,7 +101,8 @@ def finish():
 def update():
     world.update()
     world.handle_collisions()
-    if score_board[0].score >= 10 or score_board[1].score >= 10:
+    max_score = 10
+    if score_board[0].score >= max_score or score_board[1].score >= max_score:
         game_framework.change_mode(result_scene)
 
 

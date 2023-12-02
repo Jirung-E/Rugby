@@ -84,8 +84,8 @@ class Controllable(Controller):
         # 클릭 좌표에서 플레이어 기준 좌표계로 변환
         HEIGHT = get_canvas_height()
         y = HEIGHT - y
-        x -= play_scene.window_center.x
-        y -= play_scene.window_center.y
+        x -= game_framework.window_center.x
+        y -= game_framework.window_center.y
         x /= game_framework.PIXEL_PER_METER
         y /= game_framework.PIXEL_PER_METER
         x += play_scene.player.position.x

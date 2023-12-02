@@ -95,7 +95,7 @@ class Player:
 
         draw_position = self.position + -play_scene.player.position
         draw_position *= game_framework.PIXEL_PER_METER
-        draw_position += play_scene.window_center + -self.pivot
+        draw_position += game_framework.window_center + -self.pivot
         clip_data = self.current_state.clip_data()
 
         self.image.clip_composite_draw(

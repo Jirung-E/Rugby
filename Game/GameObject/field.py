@@ -12,7 +12,7 @@ class Field:
         self.height = 50 / 3.6
 
     def draw(self):
-        draw_position = -play_scene.player.position * game_framework.PIXEL_PER_METER + play_scene.window_center
+        draw_position = -play_scene.player.position * game_framework.PIXEL_PER_METER + game_framework.window_center
         w = self.width * game_framework.PIXEL_PER_METER
         h = self.height * game_framework.PIXEL_PER_METER
         self.image.draw(draw_position.x, draw_position.y, w, h)
