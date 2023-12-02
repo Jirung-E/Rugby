@@ -51,7 +51,7 @@ def init():
     player_team = random.randrange(2)
     left_end = -field.width / 2
     bottom_end = -field.height / 2 + 1.5
-    member = 2
+    member = 11
     dist = (field.height-3) / (member+1)
     for t in range(2):
         team[t] = [Player() for _ in range(member)]
@@ -65,7 +65,7 @@ def init():
                 team[t][i].controller.__bt_update_delay = 0.5
             else:
                 team[t][i].controller.__bt_update_delay = 0.3
-                # team[t][i].stemina_regen = 7
+                team[t][i].stemina_regen = 6
                 team[t][i].run_speed *= 1.05
             team[t][i].image = team_image[t]
             team[t][i].team = t+1

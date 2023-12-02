@@ -33,7 +33,7 @@ class AIControl(Controller):
         self.__times += game_framework.dt
         if self.__times >= self.__bt_update_delay:
             self.__times = 0
-            # self.bt.run()
+            self.bt.run()
 
     def handle_event(self, event):
         pass
@@ -258,7 +258,7 @@ class AIControl(Controller):
         else:
             self.client.direction.y = self.client.y_fix - self.client.position.y
             self.client.direction.normalize()
-            if abs(self.client.position.x - target.x) < 2:
+            if abs(self.client.position.x - target.x) < 2 or self.client.stemina < 45:
                 self.client.current_state.run()
             else:
                 self.client.current_state.dash()
