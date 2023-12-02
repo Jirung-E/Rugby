@@ -13,6 +13,10 @@ class Controllable(Controller):
     def __init__(self, client):
         super().__init__(client)
         self.dash = False
+        self.a_pressed = False
+        self.d_pressed = False
+        self.w_pressed = False
+        self.s_pressed = False
 
     def update(self):
         pass
@@ -41,12 +45,16 @@ class Controllable(Controller):
     def handle_keydown(self, key):
         if key == SDLK_a:
             self.client.direction.x -= 1
+            self.a_pressed = True
         elif key == SDLK_d:
             self.client.direction.x += 1
+            self.d_pressed = True
         elif key == SDLK_w:
             self.client.direction.y += 1
+            self.w_pressed = True
         elif key == SDLK_s:
             self.client.direction.y -= 1
+            self.s_pressed = True
         elif key == SDLK_LSHIFT:
             if self.client.stemina > 0:
                 self.dash = True
@@ -68,13 +76,29 @@ class Controllable(Controller):
 
     def handle_keyup(self, key):
         if key == SDLK_a:
-            self.client.direction.x += 1
+            if self.d_pressed:
+                self.client.direction.x += 1
+            else:
+                self.client.direction.x = 0
+            self.a_pressed = False
         elif key == SDLK_d:
-            self.client.direction.x -= 1
+            if self.a_pressed:
+                self.client.direction.x -= 1
+            else:
+                self.client.direction.x = 0
+            self.d_pressed = False
         elif key == SDLK_w:
-            self.client.direction.y -= 1
+            if self.s_pressed:
+                self.client.direction.y -= 1
+            else:
+                self.client.direction.y = 0
+            self.w_pressed = False
         elif key == SDLK_s:
-            self.client.direction.y += 1
+            if self.w_pressed:
+                self.client.direction.y += 1
+            else:
+                self.client.direction.y = 0
+            self.s_pressed = False
         elif key == SDLK_LSHIFT:
             self.dash = False
         elif key == SDLK_SPACE:
