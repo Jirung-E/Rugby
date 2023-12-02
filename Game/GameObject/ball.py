@@ -77,9 +77,7 @@ class Ball:
         self.rotate += self.rotate_power * self.rotate_dir * dt
 
     def draw(self):
-        draw_position = self.position + -play_scene.player.position + Point(0, self.height)
-        draw_position *= game_framework.PIXEL_PER_METER
-        draw_position += game_framework.window_center + Point(0, 30)
+        draw_position = play_scene.field.draw_position + (Point(0, self.height) + self.position) * game_framework.PIXEL_PER_METER + Point(0, 30)
         self.image.composite_draw(self.rotate, '', draw_position.x, draw_position.y)
 
         # x1, y1, x2, y2 = self.get_bb()

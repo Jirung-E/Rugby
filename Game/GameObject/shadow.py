@@ -13,9 +13,7 @@ class Shadow:
         self.offset = offset
 
     def draw(self):
-        draw_position = self.position + -play_scene.player.position
-        draw_position *= game_framework.PIXEL_PER_METER
-        draw_position += game_framework.window_center + self.offset
+        draw_position = play_scene.field.draw_position + self.position * game_framework.PIXEL_PER_METER + self.offset
         self.image.draw(draw_position.x, draw_position.y)
 
     def update(self):

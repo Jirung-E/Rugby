@@ -93,9 +93,7 @@ class Player:
         if self.flip:
             flip = 'h'
 
-        draw_position = self.position + -play_scene.player.position
-        draw_position *= game_framework.PIXEL_PER_METER
-        draw_position += game_framework.window_center + -self.pivot
+        draw_position = play_scene.field.draw_position + -self.pivot + self.position * game_framework.PIXEL_PER_METER
         clip_data = self.current_state.clip_data()
 
         self.image.clip_composite_draw(
