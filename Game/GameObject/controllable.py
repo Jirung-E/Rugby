@@ -84,16 +84,14 @@ class Controllable(Controller):
         # 클릭 좌표에서 플레이어 기준 좌표계로 변환
         HEIGHT = get_canvas_height()
         y = HEIGHT - y
-        x -= game_framework.window_center.x
-        y -= game_framework.window_center.y
-        x /= game_framework.PIXEL_PER_METER
-        y /= game_framework.PIXEL_PER_METER
-        x += play_scene.player.position.x
-        y += play_scene.player.position.y
+
+        player_position = play_scene.field.draw_position + play_scene.player.position * game_framework.PIXEL_PER_METER
+        click_point = Point(x, y) + -play_scene.field.draw_position
+        click_point /= game_framework.PIXEL_PER_METER
         if button == SDL_BUTTON_LEFT:
-            self.client.throw_double_power(x, y)
+            self.client.throw_double_power(click_point.x, click_point.y)
         elif button == SDL_BUTTON_RIGHT:
-            self.client.tackle(x, y)
+            self.client.tackle(click_point.x, click_point.y)
 
     def handle_collision(self, group, other):
         pass
